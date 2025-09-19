@@ -1,0 +1,42 @@
+  html, body, #root {
+  height: 100%;
+}
+.layout-censor, .ant-layout {
+  min-height: 100vh;
+}
+.nav-sidebar {
+  height: 100%;
+}
+   .nav-sidebar {
+    position: fixed;
+    height: 100%;
+}
+   .admin-right{
+    display: flex;
+    justify-content: end;
+    margin-right: 50px;
+    align-items: center;
+  }
+  .pro-sidebar-layout::after{
+    scroll-behavior: smooth!important;
+   }
+  .pro-sidebar-layout::-webkit-scrollbar{
+    width: 8px;
+  
+  }
+  .pro-sidebar-layout::-webkit-scrollbar-thumb{
+    background-image: linear-gradient(to bottom, #30ffd6,#fc4e8b);
+    border-radius: 100rem;
+  }
+  .pro-sidebar-layout::-webkit-scrollbar-track{
+    background-color: white;
+    background-origin: 100rem;
+  }
+  .icon-hoa-don{
+    background-color: white;
+    border-radius: 40px 40px;
+    border: 2px solid white;
+  }
+    .hover{
+      cursor: pointer;
+    }

@@ -1,0 +1,9 @@
+.custom-upload :where(.ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload.ant-upload-select) {
+    width: 230px !important;
+    height: 230px !important;
+}
+
+.custom-upload .ant-upload-list-item-container {
+    width: 230px !important;
+    height: 230px !important;
+}

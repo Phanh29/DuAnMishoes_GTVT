@@ -1,0 +1,44 @@
+/*======================
+    403 page
+=======================*/
+
+
+.page_403 {
+    padding: 20px 0;
+    background: #fff;
+    font-family: 'Arvo', serif;
+}
+
+.page_403 img {
+    width: 100%;
+}
+
+.four_zero_three_bg {
+
+    background-image: url(https://i.pinimg.com/originals/e4/e2/19/e4e2193e94554e6cc2e64b7f2a778723.gif);
+    height: 700px;
+    margin-left: 200px;
+    background-size: cover;
+}
+
+
+.four_zero_three_bg h1 {
+    font-size: 80px;
+}
+
+.four_zero_three_bg h3 {
+    font-size: 80px;
+}
+
+.link_403 {
+    color: #fff !important;
+    padding: 10px 20px;
+    background: #39ac31;
+    margin: 20px 0;
+    display: inline-block;
+}
+
+.contant_box_403 {
+    margin-top: -50px;
+    margin-left: 200px;
+}
