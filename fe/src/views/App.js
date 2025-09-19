@@ -33,6 +33,8 @@ import KichThuoc from "../layouts/admin/sanpham/KichThuoc";
 import MauSac from "../layouts/admin/sanpham/MauSac";
 import Hang from "../layouts/admin/sanpham/Hang";
 import SanPham from "../layouts/admin/sanpham/SanPham";
+import HoaDon from "../layouts/admin/hoadon/HoaDon";
+import HoaDonDetail from "../layouts/admin/hoadon/HoaDonDetail";
 function App() {
   return (
     <BrowserRouter basename={AppConfig.routerBase}>
@@ -264,6 +266,26 @@ function App() {
               </AdminGuard>
             }
           />
+          <Route
+            path="/admin-hoa-don"
+            element={
+              <AdminGuard>
+                <DashboardAdmin>
+                  <HoaDon />
+                </DashboardAdmin>
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin-detail-hoa-don/:id"
+            element={
+              <AdminGuard>
+                <DashboardAdmin>
+                  <HoaDonDetail />
+                </DashboardAdmin>
+              </AdminGuard>
+            }
+          />
           {/* <Route
             path="/admin-doi-mat-khau"
             element={
@@ -324,16 +346,7 @@ function App() {
               </AdminGuard>
             }
           />
-          <Route
-            path="/admin-hoa-don"
-            element={
-              <AdminGuard>
-                <DashboardAdmin>
-                  <HoaDon />
-                </DashboardAdmin>
-              </AdminGuard>
-            }
-          />
+  
           <Route
             path="/admin-detail-hoa-don/:id"
             element={

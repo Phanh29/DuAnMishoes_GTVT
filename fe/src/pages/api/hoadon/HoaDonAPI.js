@@ -1,6 +1,6 @@
 import { getHeader, requestAdmin } from "../../helper/request";
 export class HoaDonAPI {
-  static getAllbyTT = (trangThai) => {
+  static getAll = (trangThai) => {
     const getToken = getHeader();
     return requestAdmin({
       method: "GET",
@@ -34,6 +34,16 @@ export class HoaDonAPI {
     return requestAdmin({
       method: "GET",
       url: `/admin/hoa-don/san-pham/${id}`,
+      headers: {
+        Authorization: this.getToken,
+      },
+    });
+  };
+
+  static getAllLichSuHoaDon = (id) => {
+    return requestAdmin({
+      method: "GET",
+      url: `/admin/hoa-don/detail-lich-su-hoa-don/${id}`,
       headers: {
         Authorization: this.getToken,
       },
