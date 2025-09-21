@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.be.dto.request.ThuocTinhRequest;
 import org.example.be.service.SanPham.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +17,14 @@ import java.time.LocalDateTime;
 public class SanPhamController {
     @Autowired
     SanPhamService sanPhamService;
-
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getALL(){
+        return new ResponseEntity<>(sanPhamService.getALL(), HttpStatus.OK);
+    }
     @GetMapping
     public ResponseEntity<?> getALLSP() {
         return ResponseEntity.ok(sanPhamService.getAllSanPham());
     }
-
 
     @GetMapping("/detail/{idSP}")
     public ResponseEntity<?> detail(@PathVariable("idSP") String id) {

@@ -26,6 +26,8 @@ import { Login } from "../layouts/login/Login";
 // import HoaDonDetail from "../layouts/admin/hoadon/HoaDonDetail";
 // import DoiMatKhau from "../layouts/admin/doimatkhau/DoiMatKhau";
 // thuộc tính sản phẩm
+import CTSP from "../layouts/admin/sanpham/CTSP";
+import AddSanPham from "../layouts/admin/sanpham/AddSanPham";
 import ChatLieu from "../layouts/admin/sanpham/ChatLieu";
 import DanhMuc from "../layouts/admin/sanpham/DanhMuc";
 import DeGiay from "../layouts/admin/sanpham/DeGiay";
@@ -286,6 +288,27 @@ function App() {
               </AdminGuard>
             }
           />
+
+          <Route
+            path="/admin-them-san-pham"
+            element={
+              <AdminGuard>
+                <DashboardAdmin>
+                  <AddSanPham />
+                </DashboardAdmin>
+              </AdminGuard>
+            }
+          />
+           <Route
+              path="/admin-showct/:id"
+              element={
+              <AdminGuard>
+                <DashboardAdmin>
+                    <CTSP />
+                </DashboardAdmin>
+              </AdminGuard>
+              }
+            />
           {/* <Route
             path="/admin-doi-mat-khau"
             element={

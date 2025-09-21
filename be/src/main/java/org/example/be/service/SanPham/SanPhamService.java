@@ -1,10 +1,12 @@
 package org.example.be.service.SanPham;
 
 import org.example.be.dto.request.ThuocTinhRequest;
+import org.example.be.dto.respon.SanPhamRespone;
 import org.example.be.dto.respon.ThuocTinhRepo;
 import org.example.be.entity.SanPham;
 import org.example.be.repository.ThuocTinhSanPham.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,8 +16,11 @@ import java.util.List;
 public class SanPhamService {
     @Autowired
     SanPhamRepository sanPhamRepository;
-
-    public List<ThuocTinhRepo> getAllSanPham() {
+    public List<SanPham> getALL(){
+        Sort sortByNgayTao = Sort.by(Sort.Direction.DESC, "ngayTao");
+        return sanPhamRepository.findAll(sortByNgayTao);
+    }
+    public List<SanPhamRespone> getAllSanPham() {
         return sanPhamRepository.getALLSP();
     }
 

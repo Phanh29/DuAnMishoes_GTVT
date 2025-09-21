@@ -1,0 +1,126 @@
+.damPlace::placeholder {
+  font-weight: bold;
+}
+.custom-div {
+  border: 1px solid black;
+  text-align: center;
+  color: white;
+  justify-content: center;
+}
+:where(.css-dev-only-do-not-override-2i2tap).ant-input[type="color"] {
+  height: 200px;
+}
+
+.icon-button {
+  margin-bottom: 10px;
+}
+
+.type-product {
+  margin-left: 1%;
+}
+
+.card-mau {
+  height: 220px;
+}
+/* CSS */
+.button-them {
+  padding: 0px 20px;
+  padding-bottom: 10px;
+  border: 0;
+  font-size: 16px;
+  transition: all 150ms ease-in-out;
+
+  border-radius: 20px;
+
+  color: white;
+  font-weight: bold;
+  background: rgb(164, 155, 146);
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0,
+    inset 0px -6px 0px rgba(0, 0, 0, 0.1),
+    inset 0px -2px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-them:hover {
+  filter: brightness(0.98);
+}
+
+.button-them:active {
+  filter: brightness(0.97);
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 6px 0,
+    inset 0px -1px 0px rgba(0, 0, 0, 0.15);
+}
+
+/* CSS */
+.button-excel {
+  padding: 0px 20px;
+  padding-bottom: 10px;
+  border: 0;
+  font-size: 16px;
+  transition: all 150ms ease-in-out;
+  margin-left: 10px;
+  border-radius: 20px;
+
+  color: white;
+  font-weight: bold;
+  background: rgb(18, 105, 6);
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0,
+    inset 0px -6px 0px rgba(0, 0, 0, 0.1),
+    inset 0px -2px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-excel:hover {
+  filter: brightness(0.98);
+}
+
+.button-excel:active {
+  filter: brightness(0.97);
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 6px 0,
+    inset 0px -1px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-tra-hang {
+  padding: 0px 120px;
+  padding-bottom: 10px;
+  border: 0;
+  font-size: 16px;
+  transition: all 150ms ease-in-out;
+  margin-left: 10px;
+  border-radius: 20px;
+
+  color: white;
+  font-weight: bold;
+  background: orangered;
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0,
+    inset 0px -6px 0px rgba(0, 0, 0, 0.1),
+    inset 0px -2px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-tra-hang:hover {
+  filter: brightness(0.98);
+}
+
+.button-tra-hang:active {
+  filter: brightness(0.97);
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 6px 0,
+    inset 0px -1px 0px rgba(0, 0, 0, 0.15);
+}
+
+.qr-container {
+  transition: all 0.3s ease;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap; /* Cho phép các thẻ được bao trên nhiều dòng nếu cần */
+}
+
+.tag-container {
+  margin: 0 8px 8px 0; /* Khoảng cách giữa các thẻ */
+  flex: 1 0 50%; /* Hai thẻ trên mỗi dòng */
+}
