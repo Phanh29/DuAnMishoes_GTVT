@@ -78,6 +78,7 @@ export default function SanPham() {
     loadSanPham();
   }, []);
 
+  console.log(sanPham)
   // ====== TÌM KIẾM & LỌC (client-side) ======
   // Watch các giá trị từ form
   const kwWatch = Form.useWatch("ten", formTim) ?? ""; // Tên/Mã
