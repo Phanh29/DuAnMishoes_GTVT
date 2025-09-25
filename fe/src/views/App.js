@@ -37,6 +37,9 @@ import Hang from "../layouts/admin/sanpham/Hang";
 import SanPham from "../layouts/admin/sanpham/SanPham";
 import HoaDon from "../layouts/admin/hoadon/HoaDon";
 import HoaDonDetail from "../layouts/admin/hoadon/HoaDonDetail";
+// đợt giảm giá 
+import DotGiamGia from "../layouts/admin/dotgiamgia/DotGiamGia";
+import ThemDotGiamGia from "../layouts/admin/dotgiamgia/ThemDotGiamGia";
 function App() {
   return (
     <BrowserRouter basename={AppConfig.routerBase}>
@@ -299,16 +302,36 @@ function App() {
               </AdminGuard>
             }
           />
-           <Route
-              path="/admin-showct/:id"
-              element={
+          <Route
+            path="/admin-showct/:id"
+            element={
               <AdminGuard>
                 <DashboardAdmin>
-                    <CTSP />
+                  <CTSP />
                 </DashboardAdmin>
               </AdminGuard>
-              }
-            />
+            }
+          />
+          <Route
+            path="/admin-dot-giam-gia"
+            element={
+              <AdminGuard>
+                <DashboardAdmin>
+                  <DotGiamGia />
+                </DashboardAdmin>
+              </AdminGuard>
+            }
+          />
+          <Route
+            path="/admin-them-dot-giam-gia"
+            element={
+              <AdminGuard>
+                <DashboardAdmin>
+                  <ThemDotGiamGia />
+                </DashboardAdmin>
+              </AdminGuard>
+            }
+          />
           {/* <Route
             path="/admin-doi-mat-khau"
             element={

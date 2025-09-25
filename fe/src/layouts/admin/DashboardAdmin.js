@@ -199,7 +199,7 @@ const DashboardAdmin = ({ children }) => {
           {
             icon: <LuBadgePercent size={25} color="#f7faf9" />,
             label: "Đợt giảm giá",
-            to: "/admin-khuyen-mai",
+            to: "/admin-dot-giam-gia",
           },
           {
             icon: <FaTag size={20} color="#f7faf9" />,

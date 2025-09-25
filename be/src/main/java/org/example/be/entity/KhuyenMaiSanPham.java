@@ -10,7 +10,7 @@ import org.example.be.entity.base.BaseEntity;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @SuperBuilder
 public class KhuyenMaiSanPham extends BaseEntity {
     @ManyToOne

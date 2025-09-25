@@ -3,6 +3,7 @@ package org.example.be.controller.sanpham;
 import org.example.be.dto.request.ChiTietSanPhamRequest;
 import org.example.be.dto.request.HinhAnhRequest;
 import org.example.be.entity.ChiTietSanPham;
+import org.example.be.entity.KhuyenMai;
 import org.example.be.service.SanPham.ChiTietSanPhamService;
 import org.example.be.service.SanPham.HinhAnhService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,11 @@ public class ChiTietSanPhamController {
             hinhAnhService.add(ha);
         }
         return ResponseEntity.ok("Done");
+    }
+    @PutMapping("/updateKM/{idCTSP}")
+    public ResponseEntity<?> update(@PathVariable("idCTSP") String idCTSP,
+                                    @RequestBody KhuyenMai khuyenMai) {
+        ChiTietSanPham updated = ctspService.updateKM(idCTSP, khuyenMai);
+        return ResponseEntity.ok(updated);
     }
 }

@@ -22,4 +22,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
        LEFT JOIN nguoi_dung kh ON kh.id = hd.khach_hang_id ORDER BY ngayMua desc
                      """, nativeQuery = true)
     List<HoaDonResponn> getALLHD();
+    @Query(value = "select * from hoa_don where id =:id",nativeQuery = true)
+    HoaDon getHoaDonByIDHD(String id);
 }
