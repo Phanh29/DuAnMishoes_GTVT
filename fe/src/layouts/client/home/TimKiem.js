@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import { Breadcrumb } from "antd";
 export const TimKiem = ({ children }) => {
     const { ten } = useParams();
-    console.log(ten)
+    console.log(ten);
     //Load product
     const [products, setProducts] = useState([]);
     const [countProducts, setCountProducts] = useState([]);

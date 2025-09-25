@@ -66,7 +66,7 @@ export const DashboardClient = ({ children }) => {
 
   const onSearch = (value) => {
     if (!value.trim()) return;
-    nav(`/tim-kiem/${value.trim()}`);
+    nav(`/home-tim-kiem/${value.trim()}`);
     setValueSearch("");
   };
 
