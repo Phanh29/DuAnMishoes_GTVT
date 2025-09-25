@@ -22,7 +22,16 @@ public interface ChiTietSanPhamRespone {
 
     @Value("#{target.maMS}")
     String getMaMS();
+    String getTenCL();
 
+
+    String getTenDG();
+
+
+    String getTenDM();
+
+
+    String getTenH();
     @Value("#{target.soLuong}")
     int getSoLuong();
 
@@ -31,7 +40,7 @@ public interface ChiTietSanPhamRespone {
 
     @Value("#{target.giaBan}")
     BigDecimal getGiaBan();
-
+    String getMoTa();
     @Value("#{target.trangThai}")
     int getTrangThai();
 }

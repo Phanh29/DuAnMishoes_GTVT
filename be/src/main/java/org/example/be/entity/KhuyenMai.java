@@ -14,7 +14,7 @@ import java.util.Locale;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @SuperBuilder
 
 public class KhuyenMai extends BaseEntityThuocTinh {
