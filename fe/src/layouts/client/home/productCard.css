@@ -1,0 +1,328 @@
+.ribbon {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.ribbon {
+  --f: .5em;
+  /* control the folded part */
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  line-height: 1.8;
+  padding-inline: 1.8lh;
+  padding-bottom: var(--f);
+  border-image: conic-gradient(#0008 0 0) 51%/var(--f);
+  clip-path: polygon(100% calc(100% - var(--f)), 100% 100%, calc(100% - var(--f)) calc(100% - var(--f)), var(--f) calc(100% - var(--f)), 0 100%, 0 calc(100% - var(--f)), 999px calc(100% - var(--f) - 999px), calc(100% - 999px) calc(100% - var(--f) - 999px));
+  transform: translate(calc((1 - cos(45deg))*100%), -100%) rotate(45deg);
+  transform-origin: 0% 100%;
+  background-color: #BD1550;
+  /* the main color  */
+}
+  .ribbon2 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.ribbon2 {
+  --f: .5em;
+  /* control the folded part */
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  line-height: 1.8;
+  padding-inline: 1lh;
+  padding-bottom: var(--f);
+  border-image: conic-gradient(#0008 0 0) 51%/var(--f);
+  clip-path: polygon(100% calc(100% - var(--f)), 100% 100%, calc(100% - var(--f)) calc(100% - var(--f)), var(--f) calc(100% - var(--f)), 0 100%, 0 calc(100% - var(--f)), 999px calc(100% - var(--f) - 999px), calc(100% - 999px) calc(100% - var(--f) - 999px));
+  transform: translate(calc((1 - cos(45deg))*100%), -100%) rotate(45deg);
+  transform-origin: 0% 100%;
+  background-color: #BD1550;
+  /* the main color  */
+}
+.card-tilte-san-pham{
+  color: #333;
+  /* Dark color for text */
+  font-family: 'Arial', sans-serif;
+  /* Choosing a font-family */
+  font-size: 19px;
+  /* Adjusting the size */
+  font-weight: bold;
+  /* Making the text bold */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  /* Adding a subtle shadow for depth */
+  letter-spacing: 0.5px;
+  /* Adjusting spacing between letters */
+  margin-bottom: 15px;
+  /* Add space below the heading */
+}
+    .text-gia-tien {
+      font-size: 15px;
+      /* Making the font larger */
+      font-weight: 600;
+      /* Semi-bold for emphasis */
+      color: #007BFF;
+      /* A strong, noticeable color. Adjust as per your design */
+      padding: 5px 10px;
+      /* Adding some padding around the text */
+      background-color: #F0F0F0;
+      /* A subtle background to highlight the price */
+      border-radius: 5px;
+      /* Rounded corners for the background */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      /* A light shadow for depth */
+      display: inline-block;
+      /* Ensures padding and background encompass the text */
+      margin: 5px 0;
+      /* Adds some space around the element */
+    }
+    .container-card-sanpham .card {
+      position: relative;
+      /* width: 300px;
+      height: 420px; */
+          width: 280px;
+      height: 420px;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+  
+    .container-card-sanpham .card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: burlywood;
+      clip-path: circle(150px at 80% 20%);
+      transition: 0.5s ease-in-out;
+    }
+  
+    .container-card-sanpham .card:hover:before {
+      clip-path: circle(300px at 80% -20%);
+    }
+  
+    .container-card-sanpham .card:after {
+      content: 'MiShoes';
+      position: absolute;
+      top: 50%;
+      left:1%;
+      font-size: 5em;
+      font-weight: 800;
+      font-style: italic;
+      color: rgba(15, 15, 2, 0.05)
+    }
+  
+    .container-card-sanpham .card .imgBx {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      z-index: 2;
+      width: 100%;
+      height: 220px;
+      transition: 0.5s;
+    }
+  
+    .container-card-sanpham .card:hover .imgBx {
+      top: 0%;
+      transform: translateY(0%);
+  
+    }
+  
+    .container-card-sanpham .card .imgBx img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 270px;
+      height: 210px;
+    }
+     /* rotate(-25deg) */
+    .container-card-sanpham .card .contentBx {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 100px;
+      text-align: center;
+      transition: 1s;
+      z-index: 1;
+    }
+  
+    .container-card-sanpham .card:hover .contentBx {
+      height: 230px;
+    }
+  
+    .container-card-sanpham .card .contentBx h2 {
+      position: relative;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      margin: 0;
+    }
+  
+    .container-card-sanpham .card .contentBx .size,
+    .container-card-sanpham .card .contentBx .color {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 20px;
+      transition: 0.5s;
+      opacity: 0;
+      visibility: hidden;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-color: black;
+    }
+  
+    .container-card-sanpham .card:hover .contentBx .size {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0.5s;
+    
+    }
+  
+    .container-card-sanpham .card:hover .contentBx .color {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0.6s;
+    }
+  
+    .container-card-sanpham .card .contentBx .size h3,
+    .container-card-sanpham .card .contentBx .color h3 {
+      color: #fff;
+      font-weight: 300;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-right: 10px;
+    }
+  
+    .container-card-sanpham .card .contentBx .size span {
+      width: 28px;
+      height: 28px;
+      text-align: center;
+      line-height: 26px;
+      font-weight: bold;
+      font-size: 14px;
+      display: inline-block;
+      color: #111;
+      background: wheat;
+      margin: 0 5px;
+      transition: 0.5s;
+      border-radius: 4px;
+      cursor: pointer;
+       
+
+    }
+  
+    .container-card-sanpham .card .contentBx .size span:hover {
+      background: #9bdc28;
+    }
+  
+    .container-card-sanpham .card .contentBx .color span {
+      width: 20px;
+      height: 20px;
+      background: #ff0;
+      border-radius: 50%;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  
+    .container-card-sanpham .card .contentBx .color span:nth-child(2) {
+      background: #9bdc28;
+    }
+  
+    .container-card-sanpham .card .contentBx .color span:nth-child(3) {
+      background: #03a9f4;
+    }
+  
+    .container-card-sanpham .card .contentBx .color span:nth-child(4) {
+      background: #e91e63;
+    }
+  
+    .container-card-sanpham .card .contentBx a {
+      display: inline-block;
+      padding: 10px 20px;
+      /* background: red; */
+      border-radius: 4px;
+      margin-top: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #111;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: 0.5s;
+      margin-top: 0;
+    }
+  
+    .container-card-sanpham .card:hover .contentBx a  {
+      opacity: 1;
+      transform: translateY(0px);
+      transition-delay: 0.75s;
+  
+    }
+
+
+.button-36 {
+  padding: 5px 15px;
+  padding-bottom: 18px;
+  border: 0;
+  font-size: 16px;
+  transition: all 150ms ease-in-out;
+  border-radius: 20px;
+  color: #FFFFFF;
+  /* Changed text color to white for better contrast with a darker background */
+  font-weight: bold;
+  background: linear-gradient(135deg, #ba7f5b, #fefdfe);
+  /* New gradient background */
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0, inset 0px -6px 0px rgba(0, 0, 0, 0.1), inset 0px -2px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-36:hover {
+  filter: brightness(1.05);
+  /* Adjusted for a lighter hover effect */
+      
+}
+
+.button-36:active {
+  filter: brightness(0.95);
+  /* Darken on active for depth */
+  padding-top: 15px;
+  padding-bottom: 15px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 6px 0, inset 0px -1px 0px rgba(0, 0, 0, 0.15);
+}
+  
+.button-35 {
+  padding: 5px 15px;
+  padding-bottom: 18px;
+  border: 0;
+  font-size: 16px;
+  transition: all 150ms ease-in-out;
+  border-radius: 20px;
+  color: #FFFFFF;
+  /* Changed text color to white for better contrast with a darker background */
+  font-weight: bold;
+  background: linear-gradient(135deg, #040404, #5b025b);
+  /* New gradient background */
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 8px 0, inset 0px -6px 0px rgba(0, 0, 0, 0.1), inset 0px -2px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-35:hover {
+  filter: brightness(1.05);
+  /* Adjusted for a lighter hover effect */
+
+}
+
+.button-35:active {
+  filter: brightness(0.95);
+  /* Darken on active for depth */
+  padding-top: 15px;
+  padding-bottom: 15px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0 2px 6px 0, inset 0px -1px 0px rgba(0, 0, 0, 0.15);
+}
