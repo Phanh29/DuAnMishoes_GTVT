@@ -96,7 +96,7 @@ function App() {
             }
           />
           <Route
-            path="/tim-kiem"
+            path="/home-tim-kiem"
             element={
               <GuestGuard>
                 <CartProvider>
