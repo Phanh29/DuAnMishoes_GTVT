@@ -9,7 +9,6 @@ import GuestGuard from "../guard/GuestGuard";
 import AdminGuard from "../guard/AdminGuard";
 import { Suspense } from "react";
 import DashboardAdmin from "../layouts/admin/DashboardAdmin";
-
 // khách hàng
 import KhachHang from "../layouts/admin/khachhang/KhachHang";
 import AddKhachHang from "../layouts/admin/khachhang/AddKhachHang";
@@ -40,6 +39,11 @@ import HoaDonDetail from "../layouts/admin/hoadon/HoaDonDetail";
 // đợt giảm giá 
 import DotGiamGia from "../layouts/admin/dotgiamgia/DotGiamGia";
 import ThemDotGiamGia from "../layouts/admin/dotgiamgia/ThemDotGiamGia";
+import { Home } from "../layouts/client/home/home";
+import { DashboardClient } from "../layouts/client/DashboardClient";
+import { CartProvider } from "../layouts/client/cart/CartContext";
+import { TimKiem } from "../layouts/client/home/TimKiem";
+
 function App() {
   return (
     <BrowserRouter basename={AppConfig.routerBase}>
@@ -79,18 +83,32 @@ function App() {
             path="/quen-mat-khau"
             element={<GuestGuard>{/* <QuenMatKhau /> */}</GuestGuard>}
           />
-
-          {/* client */}
-          {/* <Route
+          <Route
             path="/home"
             element={
               <GuestGuard>
-                <DashboardClient>
-                  <Home />
-                </DashboardClient>
+                <CartProvider>
+                  <DashboardClient>
+                    <Home />
+                  </DashboardClient>
+                </CartProvider>
               </GuestGuard>
             }
-          /> */}
+          />
+          <Route
+            path="/tim-kiem"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashboardClient>
+                    <TimKiem />
+                  </DashboardClient>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          {/* client */}
+
           {/* <Route
             path="/san-pham"
             element={
