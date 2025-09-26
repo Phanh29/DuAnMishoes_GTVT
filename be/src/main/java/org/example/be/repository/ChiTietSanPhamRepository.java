@@ -5,7 +5,6 @@ import org.example.be.dto.respon.ChiTietSanPhamRespone;
 import org.example.be.dto.respon.ChiTietSanPhamSearchRespone;
 import org.example.be.dto.respon.DetailChiTietSanPhamRepo;
 import org.example.be.entity.ChiTietSanPham;
-import org.example.be.model.CTSPForKhuyenMai;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -95,4 +94,23 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
             AND o.san_pham_id =:idSP)
                      """, nativeQuery = true)
     List<ChiTietSanPhamSearchRespone> getTim(@Param("idSP") String idSP, ChiTietSanPhamSearch ctspSearch);
+
+    // sản phẩm client
+
+    // Tất cả CTSP của 1 SP (để build variants)
+    @Query("""
+           SELECT ctsp FROM ChiTietSanPham ctsp
+           WHERE ctsp.sanPham.id = :idSanPham
+           """)
+    List<ChiTietSanPham> findBySanPhamId(@Param("idSanPham") String idSanPham);
+
+    // Lấy tất cả id CTSP theo (sp, màu) – dùng để lấy ảnh theo ctsp_id
+    @Query("""
+           SELECT ctsp.id FROM ChiTietSanPham ctsp
+           WHERE ctsp.sanPham.id = :idSanPham
+             AND ctsp.mauSac.id   = :mauSacId
+           """)
+    List<String> findIdsBySanPhamAndMauSac(@Param("idSanPham") String idSanPham,
+                                           @Param("mauSacId") String mauSacId);
+
 }

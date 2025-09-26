@@ -1,11 +1,10 @@
 package org.example.be.controller.client;
 
 import lombok.RequiredArgsConstructor;
+import org.example.be.dto.impldto.SanPhamDetailResponse;
 import org.example.be.dto.request.TimSanPhamTheoMang;
 import org.example.be.service.HomeService;
-import org.example.be.service.SanPham.HangService;
-import org.example.be.service.SanPham.KichThuocService;
-import org.example.be.service.SanPham.MauSacService;
+import org.example.be.service.SanPham.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +22,10 @@ public class HomeController {
     MauSacService mauSacService;
     @Autowired
     KichThuocService kichThuocService;
+    @Autowired
+    HinhAnhService hinhAnhService;
+    @Autowired
+    SanPhamService sanPhamService;
     @GetMapping()
     public ResponseEntity<?> getALL() {
         return ResponseEntity.ok(homeService.getAllSanPham());
@@ -58,8 +61,14 @@ public class HomeController {
         return ResponseEntity.ok(kichThuocService.getAllKichThuoc());
     }
 
-//    @GetMapping("/tim-kiem/{tenTim}")
-//    public ResponseEntity<?> getTimSanPham(@PathVariable("tenTim") String tenTim) {
-//        return ResponseEntity.ok(homeService.getTim(tenTim));
-//    }
+    @GetMapping("/tim-kiem/{tenTim}")
+    public ResponseEntity<?> getTimSanPham(@PathVariable("tenTim") String tenTim) {
+        return ResponseEntity.ok(homeService.getTim(tenTim));
+    }
+
+    // detail
+    @GetMapping("/san-pham-detail/{id}")
+    public ResponseEntity<SanPhamDetailResponse> getDetail(@PathVariable("id") String id) {
+        return ResponseEntity.ok(sanPhamService.getProductDetailByCtsp(id));
+    }
 }
