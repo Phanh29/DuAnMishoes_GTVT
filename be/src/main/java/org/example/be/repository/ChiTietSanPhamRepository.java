@@ -1,6 +1,8 @@
 package org.example.be.repository;
 
+import org.example.be.dto.request.login.ChiTietSanPhamSearch;
 import org.example.be.dto.respon.ChiTietSanPhamRespone;
+import org.example.be.dto.respon.ChiTietSanPhamSearchRespone;
 import org.example.be.dto.respon.DetailChiTietSanPhamRepo;
 import org.example.be.entity.ChiTietSanPham;
 import org.example.be.model.CTSPForKhuyenMai;
@@ -39,13 +41,58 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
              JOIN san_pham sp  on o.san_pham_id=sp.id
              JOIN kich_thuoc kt  on o.kich_thuoc_id=kt.id
              JOIN mau_sac ms  on o.mau_sac_id=ms.id
-             JOIN hinh_anh ha on o.id=ha.chi_tiet_san_pham_id \s
+             JOIN hinh_anh ha on o.id=ha.chi_tiet_san_pham_id
               LEFT JOIN chat_lieu cl  on o.chat_lieu_id=cl.id
               LEFT JOIN de_giay dg  on o.de_giay_id=dg.id
              LEFT  JOIN danh_muc dm  on o.danh_muc_id=dm.id
               LEFT JOIN hang h  on o.hang_id=h.id
+            WHERE o.san_pham_id =:idSP
             group by o.id
                     """, nativeQuery = true)
     List<ChiTietSanPhamRespone> getALLCTSP(@Param("idSP") String idSP);
 
+    @Query(value = """
+            SELECT o.ghi_chu as ghiChu,o.id AS id,o.mo_ta AS moTa ,sp.id AS sanPham,sp.ten AS tenSP ,kt.id AS kichThuoc,ms.id AS mauSac,cl.id AS chatLieu,dc.id AS deGiay,dm.id AS danhMuc
+            ,h.id AS hang,o.so_luong AS soLuong,o.gia_ban AS giaBan,o.trang_thai AS trangThai
+            FROM chi_tiet_san_pham o
+            JOIN san_pham sp  on o.san_pham_id=sp.id
+            JOIN kich_thuoc kt  on o.kich_thuoc_id=kt.id
+            JOIN mau_sac ms  on o.mau_sac_id=ms.id
+            JOIN chat_lieu cl  on o.chat_lieu_id=cl.id
+            JOIN de_giay dc  on o.de_giay_id=dc.id
+            JOIN danh_muc dm  on o.danh_muc_id=dm.id
+            JOIN hang h  on o.hang_id=h.id
+            WHERE o.id=:idCT
+                     """, nativeQuery = true)
+    DetailChiTietSanPhamRepo detailCTSP(@Param("idCT") String idCT);
+
+    @Query(value = """
+            SELECT o.id AS idCTSP,MIN(o.ghi_chu) AS linkAnh,o.mo_ta AS moTa ,sp.ten AS tenSP ,kt.ten AS tenKT,ms.ma AS maMS,ms.ten AS tenMS,cl.ten AS tenCL,dc.ten AS tenDC,dm.ten AS tenDM
+            ,h.ten AS tenH,o.so_luong AS soLuong,o.gia_ban AS giaBan,o.trang_thai AS trangThai
+            FROM chi_tiet_san_pham o
+            JOIN san_pham sp  on o.san_pham_id=sp.id
+            JOIN kich_thuoc kt  on o.kich_thuoc_id=kt.id
+            JOIN mau_sac ms  on o.mau_sac_id=ms.id
+            JOIN chat_lieu cl  on o.chat_lieu_id=cl.id
+            JOIN de_giay dc  on o.de_giay_id=dc.id
+            JOIN danh_muc dm  on o.danh_muc_id=dm.id
+            JOIN hang h  on o.hang_id=h.id
+            JOIN hinh_anh ha on o.id=ha.chi_tiet_san_pham_id    
+            GROUP BY 
+            sp.ten,o.kich_thuoc_id,o.mau_sac_id,o.chat_lieu_id,o.de_giay_id,o.danh_muc_id,o.hang_id,o.trang_thai,o.so_luong,o.gia_ban,o.san_pham_id,
+            o.id,o.ghi_chu,o.mo_ta,o.id, o.mo_ta, sp.ten, kt.ten, ms.ma, ms.ten, cl.ten, dc.ten, dm.ten, h.ten, o.so_luong, o.gia_ban, o.trang_thai
+            HAVING                                                                
+            ((:#{#ctspSearch.tenCT} IS NULL OR sp.ten LIKE (%:#{#ctspSearch.tenCT}%) ) AND
+            (:#{#ctspSearch.idKT} IS NULL OR o.kich_thuoc_id =:#{#ctspSearch.idKT} ) AND
+            (:#{#ctspSearch.idMS} IS NULL OR o.mau_sac_id =:#{#ctspSearch.idMS} ) AND
+            (:#{#ctspSearch.idCL} IS NULL OR o.chat_lieu_id =:#{#ctspSearch.idCL} ) AND
+            (:#{#ctspSearch.idDC} IS NULL OR o.de_giay_id =:#{#ctspSearch.idDC} ) AND
+            (:#{#ctspSearch.idDM} IS NULL OR o.danh_muc_id =:#{#ctspSearch.idDM} ) AND
+            (:#{#ctspSearch.idH} IS NULL OR o.hang_id =:#{#ctspSearch.idH} ) AND
+            (:#{#ctspSearch.trangThaiCT} IS NULL OR o.trang_thai =:#{#ctspSearch.trangThaiCT}) AND
+            (o.so_luong BETWEEN :#{#ctspSearch.soLuongBatDau} AND :#{#ctspSearch.soLuongKetThuc} ) AND
+            (o.gia_ban BETWEEN :#{#ctspSearch.giaBanBatDau} AND :#{#ctspSearch.giaBanKetThuc} )
+            AND o.san_pham_id =:idSP)
+                     """, nativeQuery = true)
+    List<ChiTietSanPhamSearchRespone> getTim(@Param("idSP") String idSP, ChiTietSanPhamSearch ctspSearch);
 }

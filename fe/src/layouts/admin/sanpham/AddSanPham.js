@@ -23,11 +23,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormItem from "antd/es/form/FormItem";
 import {
-  DeleteOutlined,
   EditOutlined,
-  FileImageOutlined,
   InfoCircleOutlined,
-  PlusCircleFilled,
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import { keys } from "@antv/util";
@@ -36,14 +33,16 @@ import CloudinaryUpload from "./UpAnh";
 import { useNavigate } from "react-router-dom";
 import convert from "color-convert";
 import "./SanPham.css";
-import { MauSacAPI } from "../../../pages/api/sanpham/mauSac.api";
 import { ChiTietSanPhamAPI } from "../../../pages/api/sanpham/ChiTietSanPham.api";
+import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
 export default function AddSanPham() {
   //Form
   const nav = useNavigate();
   const [form] = Form.useForm();
   const [form1] = Form.useForm();
   const [form2] = Form.useForm();
+  const [formDG] = Form.useForm();
+  const [formKT] = Form.useForm();
   const [form3] = Form.useForm();
   const [selectedValue, setSelectedValue] = useState("1");
   const handleChange = (value) => {
@@ -580,7 +579,7 @@ export default function AddSanPham() {
     loadSP();
   }, []);
   const loadSP = async () => {
-    ChiTietSanPhamAPI.getAllSanPham().then((response) => {
+    ThuocTinhAPI.getAllSanPhamForAdd().then((response) => {
       setOptionsSP(response.data);
     });
   };
@@ -591,11 +590,11 @@ export default function AddSanPham() {
       );
     };
     if (!checkTrung(value.ten)) {
-      ChiTietSanPhamAPI.createSanPham(value)
+      ThuocTinhAPI.create("san-pham", value)
         .then((response) => {
-          loadSP();
           form1.resetFields();
           setOpenSP(false);
+          loadSP();
         })
         .catch((error) => console.error("Error adding item:", error));
       toast("✔️ Thêm thành công!", {
@@ -628,7 +627,7 @@ export default function AddSanPham() {
     loadKT();
   }, []);
   const validateKichThuoc = (_, value) => {
-    const { getFieldValue } = form1;
+    const { getFieldValue } = formKT;
     const tenKichThuoc = getFieldValue("ten");
 
     if (!tenKichThuoc.trim()) {
@@ -648,7 +647,7 @@ export default function AddSanPham() {
     return Promise.resolve();
   };
   const loadKT = async () => {
-    ChiTietSanPhamAPI.getAllKichThuoc().then((response) => {
+    ThuocTinhAPI.getAll("kich-thuoc").then((response) => {
       const data = response.data;
       setKTData(data);
     });
@@ -660,9 +659,9 @@ export default function AddSanPham() {
       );
     };
     if (!checkTrung(value.ten)) {
-      ChiTietSanPhamAPI.createKichThuoc(value)
+      ThuocTinhAPI.create("kich-thuoc", value)
         .then((response) => {
-          form1.resetFields();
+          formKT.resetFields();
           setOpenKT(false);
           loadKT();
         })
@@ -709,7 +708,7 @@ export default function AddSanPham() {
     loadMS();
   }, []);
   const loadMS = async () => {
-    ChiTietSanPhamAPI.getAllMauSac().then((response) => {
+    ThuocTinhAPI.getAll("mau-sac").then((response) => {
       const data = response.data;
       setMSData(data);
     });
@@ -724,7 +723,7 @@ export default function AddSanPham() {
       const rgb = convert.hex.rgb(hexCode);
       const colorName = convert.rgb.keyword(rgb);
       value.ten = colorName;
-      MauSacAPI.create(value).then((res) => {
+      ThuocTinhAPI.create("mau-sac", value).then((res) => {
         loadMS();
         setOpenMS(false);
         form1.resetFields();
@@ -759,7 +758,7 @@ export default function AddSanPham() {
     loadCL();
   }, []);
   const loadCL = async () => {
-    ChiTietSanPhamAPI.getAllChatLieu().then((response) => {
+    ThuocTinhAPI.getAll("chat-lieu").then((response) => {
       const data = response.data;
       setCL(data);
     });
@@ -771,7 +770,7 @@ export default function AddSanPham() {
       );
     };
     if (!checkTrung(value.ten)) {
-      ChiTietSanPhamAPI.createChatLieu(value)
+      ThuocTinhAPI.create("chat-lieu", value)
         .then((response) => {
           form1.resetFields();
           setOpenCL(false);
@@ -805,7 +804,7 @@ export default function AddSanPham() {
   const [openDC, setOpenDC] = useState(false);
   const [dc, setDC] = useState([]);
   const validateDeGiay = (_, value) => {
-    const { getFieldValue } = form1;
+    const { getFieldValue } = formDG;
     const tenDeGiay = getFieldValue("ten");
 
     if (!tenDeGiay.trim()) {
@@ -828,7 +827,7 @@ export default function AddSanPham() {
     loadDC();
   }, []);
   const loadDC = async () => {
-    ChiTietSanPhamAPI.getAllDeGiay().then((response) => {
+    ThuocTinhAPI.getAll("de-giay").then((response) => {
       const data = response.data;
       setDC(data);
     });
@@ -840,9 +839,9 @@ export default function AddSanPham() {
       );
     };
     if (!checkTrung(value.ten)) {
-      ChiTietSanPhamAPI.createDeGiay(value)
+      ThuocTinhAPI.create("de-giay", value)
         .then((response) => {
-          form1.resetFields();
+          formDG.resetFields();
           setOpenDC(false);
           loadDC();
         })
@@ -877,7 +876,7 @@ export default function AddSanPham() {
     loadDM();
   }, []);
   const loadDM = async () => {
-    ChiTietSanPhamAPI.getAllDanhMuc().then((response) => {
+    ThuocTinhAPI.getAll("danh-muc").then((response) => {
       const data = response.data;
       setDM(data);
     });
@@ -889,7 +888,7 @@ export default function AddSanPham() {
       );
     };
     if (!checkTrung(value.ten)) {
-      ChiTietSanPhamAPI.createDanhMuc(value)
+      ThuocTinhAPI.create("danh-muc", value)
         .then((response) => {
           form1.resetFields();
           setOpenDM(false);
@@ -926,7 +925,7 @@ export default function AddSanPham() {
     loadH();
   }, []);
   const loadH = async () => {
-    ChiTietSanPhamAPI.getAllHang().then((response) => {
+    ThuocTinhAPI.getAll("hang").then((response) => {
       const data = response.data;
       setH(data);
     });
@@ -938,7 +937,7 @@ export default function AddSanPham() {
       );
     };
     if (!checkTrung(value.ten)) {
-      ChiTietSanPhamAPI.createHang(value)
+      ThuocTinhAPI.create("hang", value)
         .then((response) => {
           form1.resetFields();
           setOpenH(false);
@@ -1407,7 +1406,7 @@ export default function AddSanPham() {
                                 title: "Thông báo",
                                 content: "Bạn có chắc chắn muốn thêm không?",
                                 onOk: () => {
-                                  form1.submit();
+                                  formDG.submit();
                                 },
                                 footer: (_, { OkBtn, CancelBtn }) => (
                                   <>
@@ -1433,7 +1432,7 @@ export default function AddSanPham() {
                             maxWidth: 1000,
                           }}
                           onFinish={addDoCao}
-                          form={form1}
+                          form={formDG}
                         >
                           <div className="row">
                             <div className="container">
@@ -1674,7 +1673,7 @@ export default function AddSanPham() {
                               title: "Thông báo",
                               content: "Bạn có chắc chắn muốn thêm không?",
                               onOk: () => {
-                                form1.submit();
+                                formKT.submit();
                               },
                               footer: (_, { OkBtn, CancelBtn }) => (
                                 <>
@@ -1700,7 +1699,7 @@ export default function AddSanPham() {
                           maxWidth: 1000,
                         }}
                         onFinish={addKichThuoc}
-                        form={form1}
+                        form={formKT}
                       >
                         <div className="row">
                           <div className="container">

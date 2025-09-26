@@ -48,7 +48,18 @@ static getAll = (attribute) => {
     });
   };
 
-    static getListMauSacBySanPhamId = (id) => {
+    static getAllSanPhamForAdd = (id) => {
+    const getToken = getHeader();
+    return requestAdmin({
+      method: "GET",
+      url: `/admin/san-pham/getAll`,
+      headers: {
+        Authorization: getToken,
+      },
+    });
+  };
+
+  static getListMauSacBySanPhamId = (id) => {
     const getToken = getHeader();
     return requestAdmin({
       method: "GET",

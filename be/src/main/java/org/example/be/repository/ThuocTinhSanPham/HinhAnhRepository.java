@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface HinhAnhRepository extends JpaRepository<HinhAnh, String> {
     @Query(value = """
-            SELECT * FROM duanmishoes.hinh_anh where ten=:tenAnh AND
+            SELECT * FROM hinh_anh where ten=:tenAnh AND
             chi_tiet_san_pham_id=:idSP order by ngay_tao DESC;
             """, nativeQuery = true)
     List<HinhAnh> getAnhCTSP(String tenAnh, String idSP);
