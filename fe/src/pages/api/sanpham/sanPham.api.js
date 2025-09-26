@@ -47,34 +47,11 @@ export class SanPhamAPI {
     });
   };
 
-  static getAnhCTSP = (ten, idSP) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/hinhanh/${ten}/${idSP}`,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
   static getAnhCTSPClient = (ten, idSP) => {
     const getToken = getHeader();
     return requestAdmin({
       method: "GET",
       url: `/hinhanh/${ten}/${idSP}`,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static addAnhTheoMau = (id,data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      data: data,
-      url: `/admin/hinhanh/add-anh/${id}`,
       headers: {
         Authorization: getToken,
       },
@@ -93,14 +70,4 @@ export class SanPhamAPI {
     });
   };
 
-  static deleteAnh = (idAnh) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "DELETE",
-      url: `admin/hinhanh/delete-anh/${idAnh}`,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
 }

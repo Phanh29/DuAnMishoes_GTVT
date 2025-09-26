@@ -1,6 +1,6 @@
 import { getHeader, requestAdmin } from "../../helper/request";
 export class ChiTietSanPhamAPI {
- static showCTSP = (data) => {
+  static showCTSP = (data) => {
     const getToken = getHeader();
     return requestAdmin({
       method: "GET",
@@ -54,6 +54,41 @@ export class ChiTietSanPhamAPI {
       },
     });
   };
+
+  static getAnhCTSP = (ten, idSP) => {
+    const getToken = getHeader();
+    return requestAdmin({
+      method: "GET",
+      url: `/admin/hinhanh/${ten}/${idSP}`,
+      headers: {
+        Authorization: getToken,
+      },
+    });
+  };
+
+  static addAnhTheoMau = (id, data) => {
+    const getToken = getHeader();
+    return requestAdmin({
+      method: "POST",
+      data: data,
+      url: `/admin/hinhanh/add-anh/${id}`,
+      headers: {
+        Authorization: getToken,
+      },
+    });
+  };
+
+  static deleteAnh = (idAnh) => {
+    const getToken = getHeader();
+    return requestAdmin({
+      method: "DELETE",
+      url: `admin/hinhanh/delete-anh/${idAnh}`,
+      headers: {
+        Authorization: getToken,
+      },
+    });
+  };
+
   static QRCtsp = (id) => {
     const getToken = getHeader();
     return requestAdmin({
@@ -106,174 +141,6 @@ export class ChiTietSanPhamAPI {
     return requestAdmin({
       method: "POST",
       url: `/admin/ctsp/search-ctsp-banhang`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllSanPham = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/san-pham/getAll`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createSanPham = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/san-pham/add`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllKichThuoc = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/kich-thuoc`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createKichThuoc = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/kich-thuoc/add`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllMauSac = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/mau-sac`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createMauSac = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/mau-sac/add`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllChatLieu = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/chat-lieu`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createChatLieu = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/chat-lieu/add`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllDeGiay = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/de-giay`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createDeGiay = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/de-giay/add`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllDanhMuc = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/danh-muc`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createDanhMuc = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/danh-muc/add`,
-      data: data,
-      headers: {
-        Authorization: getToken,
-      },
-    });
-  };
-
-  static getAllHang = () => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "GET",
-      url: `/admin/hang`,
-      headers: {
-        Authorization: getToken,
-      },
-      //   params: filter,
-    });
-  };
-
-  static createHang = (data) => {
-    const getToken = getHeader();
-    return requestAdmin({
-      method: "POST",
-      url: `/admin/hang/add`,
       data: data,
       headers: {
         Authorization: getToken,

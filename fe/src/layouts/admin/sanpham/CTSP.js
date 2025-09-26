@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './SanPham.css'
 import SuaAnhCTSP from './SuaAnhCTSP';
 import { ChiTietSanPhamAPI } from '../../../pages/api/sanpham/ChiTietSanPham.api';
+import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
 
 export default function CTSP() {
   //Mở detail ctsp
@@ -257,7 +258,7 @@ export default function CTSP() {
     loadKT();
   }, []);
   const loadKT = async () => {
-    ChiTietSanPhamAPI.getAllKichThuoc().then((result) => {
+    ThuocTinhAPI.getAll("kich-thuoc").then((result) => {
       setKT(result.data);
     })
   };
@@ -267,7 +268,7 @@ export default function CTSP() {
     loadMS();
   }, []);
   const loadMS = async () => {
-    ChiTietSanPhamAPI.getAllMauSac().then((result) => {
+    ThuocTinhAPI.getAll("mau-sac").then((result) => {
       setMS(result.data);
     })
   };
@@ -277,7 +278,7 @@ export default function CTSP() {
     loadCL();
   }, []);
   const loadCL = async () => {
-    ChiTietSanPhamAPI.getAllChatLieu().then((result) => {
+    ThuocTinhAPI.getAll("chat-lieu").then((result) => {
       setCL(result.data);
     })
   };
@@ -287,7 +288,7 @@ export default function CTSP() {
     loadDC();
   }, []);
   const loadDC = async () => {
-    ChiTietSanPhamAPI.getAllDeGiay().then((result) => {
+    ThuocTinhAPI.getAll("de-giay").then((result) => {
       setDC(result.data);
     })
   };
@@ -297,7 +298,7 @@ export default function CTSP() {
     loadDM();
   }, []);
   const loadDM = async () => {
-    ChiTietSanPhamAPI.getAllDanhMuc().then((result) => {
+    ThuocTinhAPI.getAll("danh-muc").then((result) => {
       setDM(result.data);
     })
   };
@@ -307,7 +308,7 @@ export default function CTSP() {
     loadH();
   }, []);
   const loadH = async () => {
-    ChiTietSanPhamAPI.getAllHang().then((result) => {
+    ThuocTinhAPI.getAll("hang").then((result) => {
       setH(result.data);
     })
   };

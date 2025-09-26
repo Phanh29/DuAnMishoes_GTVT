@@ -2,6 +2,7 @@ package org.example.be.controller.sanpham;
 
 import org.example.be.dto.request.ChiTietSanPhamRequest;
 import org.example.be.dto.request.HinhAnhRequest;
+import org.example.be.dto.request.login.ChiTietSanPhamSearch;
 import org.example.be.entity.ChiTietSanPham;
 import org.example.be.entity.KhuyenMai;
 import org.example.be.service.SanPham.ChiTietSanPhamService;
@@ -32,31 +33,33 @@ public class ChiTietSanPhamController {
     public ResponseEntity<?> getALLCTSP(@PathVariable("idSP") String id) {
         return new ResponseEntity<>(ctspService.getALLCTSP(id), HttpStatus.OK);
     }
+
     @GetMapping("/detailsp")
     public ResponseEntity<?> getAllDetail() {
         return new ResponseEntity<>(ctspService.detail(), HttpStatus.OK);
     }
-    @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody ChiTietSanPhamRequest request, HinhAnhRequest ha) {
-        request.setGiaNhap(BigDecimal.valueOf(0));
-        request.setTrangThai(0);
-        request.setSoLuongTra(0);
-        request.setNgayTao(LocalDateTime.now());
-        request.setGioiTinh(true);
-        ArrayList<String> listLink = request.getLinkAnh();
-        ChiTietSanPham newct = ctspService.add(request);
-        for (String link : listLink) {
-            int maAnh = hinhAnhService.getALL().size();
-            ha.setTrangThai(0);
-            ha.setMa("HA-" + (maAnh + 1));
-            ha.setChiTietSanPham(newct.getId());
-            ha.setTen(newct.getMauSac().getId());
-            ha.setUrl(link);
-            ha.setNgayTao(LocalDateTime.now());
-            hinhAnhService.add(ha);
-        }
-        return ResponseEntity.ok("Done");
+
+    @GetMapping("/detail/{idCT}")
+    public ResponseEntity<?> getDetail(@PathVariable("idCT") String id) {
+        return new ResponseEntity<>(ctspService.detailCTSP(id), HttpStatus.OK);
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<?> add(@RequestBody ChiTietSanPhamRequest request, HinhAnhRequest ha) {
+        ChiTietSanPham ct = ctspService.add(request,ha);
+        return ResponseEntity.ok(ct);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") String id, @RequestBody ChiTietSanPhamRequest request) {
+        return ResponseEntity.ok(ctspService.update(id, request));
+    }
+
+    @PostMapping("/search-ctsp/{idSP}")
+    public ResponseEntity<?> search(@PathVariable("idSP") String id, @RequestBody ChiTietSanPhamSearch ctspSearch) {
+        return ResponseEntity.ok(ctspService.getSearch(id, ctspSearch));
+    }
+
     @PutMapping("/updateKM/{idCTSP}")
     public ResponseEntity<?> update(@PathVariable("idCTSP") String idCTSP,
                                     @RequestBody KhuyenMai khuyenMai) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DeleteFilled, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Image, Modal, Upload, message } from 'antd';
-import { SanPhamAPI } from '../../../pages/api/sanpham/sanPham.api';
+import { ChiTietSanPhamAPI } from '../../../pages/api/sanpham/ChiTietSanPham.api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -9,7 +9,7 @@ const SuaAnhCTSP = ({ ten, idSP }) => {
 
   const [linkAnhList, setLinkAnhList] = useState([]);
   const loadAnhCTSP = async () => {
-    SanPhamAPI.getAnhCTSP(ten, idSP)
+    ChiTietSanPhamAPI.getAnhCTSP(ten, idSP)
       .then((res) => {
         setLinkAnhList(res.data);
       })
@@ -17,7 +17,7 @@ const SuaAnhCTSP = ({ ten, idSP }) => {
 
   const deleteAnhCTSP = async (idAnh) => {
     try {
-      await SanPhamAPI.deleteAnh(idAnh);
+      await ChiTietSanPhamAPI.deleteAnh(idAnh);
       setLinkAnhList((prevList) => prevList.filter((linkAnh) => linkAnh.id !== idAnh));
       message.success('Ảnh đã được xóa thành công.');
     } catch (error) {
@@ -64,7 +64,7 @@ const SuaAnhCTSP = ({ ten, idSP }) => {
         ten: ten,
         url: imageUrl
       };
-      SanPhamAPI.addAnhTheoMau(idSP, imageObject)
+      ChiTietSanPhamAPI.addAnhTheoMau(idSP, imageObject)
         .then((res) => {
           setLinkAnhList((prevData) => [...prevData, res.data])
           toast('✔️ Thêm ảnh mới thành công!', {
@@ -169,8 +169,6 @@ const SuaAnhCTSP = ({ ten, idSP }) => {
         pauseOnHover
         theme="light"
       />
-      {/* Same as */}
-      <ToastContainer />
     </>
   );
 };
