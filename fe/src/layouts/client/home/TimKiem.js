@@ -29,6 +29,7 @@ export const TimKiem = ({ children }) => {
         if (ten == undefined) {
             getAllSanPham()
         } else {
+            console.log(products);
             getAll();
         }
     }, [ten])

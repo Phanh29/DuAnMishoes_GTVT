@@ -95,7 +95,9 @@ const ModalDetailSP = ({
       "[ModalDetailSP] Thêm vào giỏ: CTSP ID =",
       selectedVariant.id,
       "Số lượng =",
-      soLuong
+      soLuong,
+
+      "KM="  ,km
     );
     // TODO: gọi API add giỏ hàng
     toast("✔️ Thêm thành công!", { position: "top-right" });
@@ -129,18 +131,28 @@ const ModalDetailSP = ({
             src={largeImage}
             alt="Large Product"
           />
-          <div className="row mt-2">
+          <div
+            className="d-flex mt-2"
+            style={{ gap: "8px", overflowX: "auto" }}
+          >
             {productDetail.colors
               ?.find((c) => c.id === selectedMauSac)
               ?.images?.map((url, i) => (
-                <div className="col-md-3" key={i}>
-                  <img
-                    style={{ width: 90, height: 90, cursor: "pointer" }}
-                    src={url}
-                    alt={`thumb-${i}`}
-                    onClick={() => handleImageClick(url)}
-                  />
-                </div>
+                <img
+                  key={i}
+                  style={{
+                    width: 85,
+                    height: 85,
+                    cursor: "pointer",
+                    border: "2px solid #ccc",
+                    borderRadius: "6px",
+                    padding: "1px",
+                    flexShrink: 0, // giữ nguyên kích thước, không co lại
+                  }}
+                  src={url}
+                  alt={`thumb-${i}`}
+                  onClick={() => handleImageClick(url)}
+                />
               ))}
           </div>
         </div>
