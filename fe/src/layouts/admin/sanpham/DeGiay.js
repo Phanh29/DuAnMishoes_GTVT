@@ -17,10 +17,12 @@ import {
   BookFilled,
   FilterFilled,
 } from "@ant-design/icons";
-import { toast,ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { AiOutlineColumnHeight } from "react-icons/ai";
 import { BsFillEyeFill } from "react-icons/bs";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddDoCaoModal from "./Modal/AddDoCaoModal";
+import UpdateDeGiay from "./Modal/UpdateDeGiayModal";
 
 export default function DeGiay() {
   // Helpers: bỏ dấu & chuẩn hoá tìm kiếm
@@ -59,21 +61,6 @@ export default function DeGiay() {
     ThuocTinhAPI.getAll("de-giay").then((res) => setDeGiays(res.data));
   };
 
-  // Add
-  const addDeGiay = (value) => {
-    const exists = deGiay.some((dg) => norm(dg.ten) === norm(value.ten));
-    if (!exists) {
-      ThuocTinhAPI.create("de-giay", value).then(() => {
-      toast.success("✔️ Thêm thành công!");
-        loadDeGiay();
-        setOpen(false);
-        form.resetFields();
-      });
-    } else {
-      toast.error("❌Đế giày đã tồn tại!");
-    }
-  };
-
   // Detail -> open Update modal
   const showModal = async (id) => {
     await ThuocTinhAPI.detail("de-giay", id).then((res) => {
@@ -91,48 +78,6 @@ export default function DeGiay() {
       setDgUpdate(res.data);
     });
     setOpenUpdate(true);
-  };
-
-  // Update
-  const updateDeGiay = () => {
-    if (dgUpdate.ten !== tenCheck) {
-      const exists = deGiay.some((x) => norm(x.ten) === norm(dgUpdate.ten));
-      if (exists) {
-           toast.error("❌ Đế giày trùng với đế giày khác !");
-        return;
-      }
-    }
-    ThuocTinhAPI.update("de-giay", dgUpdate.id, dgUpdate).then(() => {
-      toast.success("✔️ Sửa thành công!");
-      setDgUpdate("");
-      loadDeGiay();
-      setOpenUpdate(false);
-    });
-  };
-
-  // Validate
-  const validateDateAdd = (_, value) => {
-    const tenTim = form.getFieldValue("ten");
-    if (tenTim == null || !tenTim.trim())
-      return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(tenTim))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    const k = parseInt(value, 10);
-    if (isNaN(k) || k < 1 || k > 10)
-      return Promise.reject("Đế giày phải là số nguyên từ 1 đến 10");
-    return Promise.resolve();
-  };
-
-  const validateDateUpdate = (_, value) => {
-    const tenTim = form1.getFieldValue("ten");
-    if (tenTim == null || !tenTim.trim())
-      return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(tenTim))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    const k = parseInt(value, 10);
-    if (isNaN(k) || k < 1 || k > 10)
-      return Promise.reject("Đế giày phải là số nguyên từ 1 đến 10");
-    return Promise.resolve();
   };
 
   const validateDateTim = () => {
@@ -319,96 +264,31 @@ export default function DeGiay() {
           <hr />
 
           <div className="ms-3">
-            {/* Modal Add – KHÔNG dùng onOk; footer=null; nút submit trong Form */}
-            <Modal
-              title="Thêm Đế Giày"
-              centered
+            <AddDoCaoModal
               open={open}
-              onCancel={() => setOpen(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                form={form}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={addDeGiay}
-              >
-                <Form.Item
-                  label="Tên"
-                  name="ten"
-                  hasFeedback
-                  rules={[{ required: true, validator: validateDateAdd }]}
-                >
-                  <Input maxLength={10} className="border" />
-                </Form.Item>
-                <div className="text-end">
-                  <Button onClick={() => setOpen(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Thêm
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+              onClose={() => setOpen(false)}
+              form={form}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              dc={deGiay}
+              loadDC={loadDeGiay}
+            />
 
             {/* Modal Update – KHÔNG dùng onOk; footer=null; nút submit trong Form */}
-            <Modal
-              title="Sửa Đế Giày"
-              centered
-              open={openUpdate}
-              onCancel={() => setOpenUpdate(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                {...formItemLayout}
-                form={form1}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={updateDeGiay}
-              >
-                <Form.Item
-                  name="ten"
-                  label={<b>Tên</b>}
-                  hasFeedback
-                  rules={[{ required: true, validator: validateDateUpdate }]}
-                >
-                  <Input
-                    className="border"
-                    maxLength={31}
-                    value={dgUpdate?.ten}
-                    onChange={(e) =>
-                      setDgUpdate({ ...dgUpdate, ten: e.target.value })
-                    }
-                  />
-                </Form.Item>
-                <Form.Item label={<b>Trạng thái </b>}>
-                  <Radio.Group
-                    value={dgUpdate?.trangThai}
-                    onChange={(e) =>
-                      setDgUpdate({ ...dgUpdate, trangThai: e.target.value })
-                    }
-                  >
-                    <Radio value={0}>Còn bán</Radio>
-                    <Radio value={1}>Dừng bán</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <div className="text-end">
-                  <Button onClick={() => setOpenUpdate(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Sửa
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+            <UpdateDeGiay
+              openUpdate={openUpdate}
+              setOpenUpdate={setOpenUpdate}
+              form1={form1}
+              dgUpdate={dgUpdate}
+              setDgUpdate={setDgUpdate}
+              tenCheck={tenCheck}
+              deGiay={deGiay}
+              loadDeGiay={loadDeGiay}
+              norm={norm}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              formItemLayout={formItemLayout}
+            />
           </div>
 
           <div className="container-fluid mt-4">

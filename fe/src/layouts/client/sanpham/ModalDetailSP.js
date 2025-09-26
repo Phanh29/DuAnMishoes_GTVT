@@ -100,7 +100,7 @@ const ModalDetailSP = ({
       "KM="  ,km
     );
     // TODO: gọi API add giỏ hàng
-    toast("✔️ Thêm thành công!", { position: "top-right" });
+    toast.success("Thêm thành công!", { position: "top-right" });
   };
 
   if (!productDetail) return null;

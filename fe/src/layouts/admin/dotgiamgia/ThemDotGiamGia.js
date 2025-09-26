@@ -88,7 +88,7 @@ const ThemDotGiamGia = () => {
             );
           }
 
-          toast("✔️ Thêm thành công!", {
+          toast.success("Thêm thành công !", {
             position: "top-right",
             autoClose: 5000,
             theme: "light",

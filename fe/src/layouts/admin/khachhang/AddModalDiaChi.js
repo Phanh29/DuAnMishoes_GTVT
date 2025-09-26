@@ -36,7 +36,7 @@ const AddModalDiaChi = (props) => {
     };
     NguoiDungAPI.addDCKH(data)
       .then(() => {
-        toast.success("✔️ Thêm địa chỉ thành công!");
+        toast.success("Thêm địa chỉ thành công!");
         loadDiaChi();
         handleClose();
       })

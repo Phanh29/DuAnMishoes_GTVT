@@ -105,7 +105,7 @@ export default function CTSP() {
         .catch(error => console.error('Error adding item:', error));
 
     }
-    toast('✔️ Sửa thành công!', {
+    toast.success('Sửa thành công!', {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -204,7 +204,7 @@ export default function CTSP() {
 
     ChiTietSanPhamAPI.updateCTSP(ctData.id, ctData)
       .then(response => {
-        toast('✔️ Sửa thành công!', {
+        toast.success('Sửa thành công!', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

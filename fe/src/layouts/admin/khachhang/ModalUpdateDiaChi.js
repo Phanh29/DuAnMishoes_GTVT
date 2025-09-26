@@ -22,7 +22,7 @@ const ModalUpdateDiaChi = (props) => {
   const handleUpdateDC = (value) => {
     NguoiDungAPI.updateDiaChiByID(value.id, value)
       .then(() => {
-        toast.success("✔️ Cập nhật địa chỉ thành công!");
+        toast.success("Cập nhật địa chỉ thành công!");
         form.resetFields();
         loadDiaChi();
         handleClose();
