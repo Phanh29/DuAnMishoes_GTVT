@@ -11,29 +11,29 @@ import java.util.List;
 
 public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
     String BASE_SELECT = """
-            SELECT 
-                ctsp.san_pham_id AS idSanPham,
-                ctsp.id AS idCt,
-                sp.ten AS name,
-                kt.ten AS size,
-                ms.ten AS color,
-                ms.ma AS colorCode,
-                COALESCE(km.gia_tri_khuyen_mai, 0) AS giaTriKhuyenMai,
-                km.loai AS loaiKM,
-                ctsp.gia_ban AS price,
-                ctsp.ghi_chu AS image,
-                ctsp.ghi_chu AS hoverImage
-            FROM chi_tiet_san_pham ctsp
-            JOIN san_pham sp ON ctsp.san_pham_id = sp.id
-            JOIN mau_sac ms ON ctsp.mau_sac_id = ms.id
-            JOIN kich_thuoc kt ON ctsp.kich_thuoc_id = kt.id
-            LEFT JOIN khuyen_mai km ON ctsp.khuyen_mai_id = km.id
+                           SELECT  ctsp.san_pham_id AS idSanPham,
+                              ctsp.id AS idCt,
+                              sp.ten AS name,
+                              kt.ten AS size,
+                              ms.ten AS color,
+                              ms.ma AS colorCode,
+                              COALESCE(km.gia_tri_khuyen_mai, 0) AS giaTriKhuyenMai,
+                              km.loai AS loaiKM,
+                              ctsp.gia_ban AS price,
+                              ctsp.ghi_chu AS image,
+                              ctsp.ghi_chu AS hoverImage
+                          FROM chi_tiet_san_pham ctsp
+                          JOIN san_pham sp ON ctsp.san_pham_id = sp.id
+                          JOIN mau_sac ms ON ctsp.mau_sac_id = ms.id
+                          JOIN kich_thuoc kt ON ctsp.kich_thuoc_id = kt.id
+                          LEFT JOIN chitietsp_khuyenmai ctkm ON ctsp.id = ctkm.chi_tiet_sp_id
+                          left join khuyen_mai km on ctkm.khuyen_mai_id=km.id
             """;
 
-    @Query(value = BASE_SELECT + " WHERE ctsp.so_luong > 0 GROUP BY ctsp.id", nativeQuery = true)
+    @Query(value = BASE_SELECT + " WHERE ctsp.so_luong > 0 GROUP BY ctsp.id,km.gia_tri_khuyen_mai,km.loai", nativeQuery = true)
     List<HomeRespone> getALLSanPham();
 
-    @Query(value = BASE_SELECT + " WHERE ctsp.so_luong > 0 GROUP BY ctsp.id ORDER BY ctsp.ngay_tao DESC LIMIT 8", nativeQuery = true)
+    @Query(value = BASE_SELECT + " WHERE ctsp.so_luong > 0 GROUP BY ctsp.id,km.gia_tri_khuyen_mai,km.loai ORDER BY ctsp.ngay_tao DESC LIMIT 8", nativeQuery = true)
     List<HomeRespone> getALLSanPhamNew();
 
     @Query(value = BASE_SELECT + """
@@ -42,7 +42,7 @@ public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
             WHERE YEAR(hdct.ngay_tao) = YEAR(CURDATE())
               AND (hd.trang_thai = 4 OR hd.trang_thai = 5)
               AND ctsp.so_luong > 0
-            GROUP BY ctsp.id
+            GROUP BY ctsp.id,km.gia_tri_khuyen_mai,km.loai
             """, nativeQuery = true)
     List<HomeRespone> getHotSale();
 
@@ -366,26 +366,28 @@ public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
     List<HomeRespone> getLocKichThuoc(@Param("req") TimSanPhamTheoMang req);
 
     @Query(value = """
-            SELECT 
-                  ctsp.san_pham_id AS idSanPham,
-                  ctsp.id AS idCt,
-                  sp.ten AS name,
-                  kt.ten AS size,
-                  ms.ten AS color,
-                  COALESCE(km.gia_tri_khuyen_mai, 0) AS giaTriKhuyenMai,
-                  km.loai AS loaiKM,
-                  ms.ma AS colorCode,
-                  ctsp.gia_ban AS price,
-                  ctsp.ghi_chu AS image,
-                  ctsp.ghi_chu AS hoverImage
-              FROM chi_tiet_san_pham ctsp
-              JOIN san_pham sp ON ctsp.san_pham_id = sp.id
-              JOIN mau_sac ms ON ctsp.mau_sac_id = ms.id
-              JOIN kich_thuoc kt ON ctsp.kich_thuoc_id = kt.id
-              LEFT JOIN khuyen_mai km ON ctsp.khuyen_mai_id = km.id
-              WHERE ctsp.so_luong > 0 AND ctsp.ten_ct LIKE %:tenTim%
-              GROUP BY ctsp.gia_ban, ms.ten, sp.ten, kt.ten, ms.ma, km.gia_tri_khuyen_mai, km.loai, ctsp.ghi_chu, ctsp.id
-              ORDER BY ctsp.ngay_tao DESC
+        SELECT\s
+            ctsp.san_pham_id AS idSanPham,
+            ctsp.id AS idCt,
+            sp.ten AS name,
+            kt.ten AS size,
+            ms.ten AS color,
+            COALESCE(km.gia_tri_khuyen_mai, 0) AS giaTriKhuyenMai,
+            km.loai AS loaiKM,
+            ms.ma AS colorCode,
+            ctsp.gia_ban AS price,
+            ctsp.ghi_chu AS image,
+            ctsp.ghi_chu AS hoverImage
+        FROM chi_tiet_san_pham ctsp
+        JOIN san_pham sp ON ctsp.san_pham_id = sp.id
+        JOIN mau_sac ms ON ctsp.mau_sac_id = ms.id
+        JOIN kich_thuoc kt ON ctsp.kich_thuoc_id = kt.id
+        LEFT JOIN chitietsp_khuyenmai ctkm ON ctsp.id = ctkm.chi_tiet_sp_id
+        LEFT JOIN khuyen_mai km ON km.id = ctkm.khuyen_mai_id
+        WHERE ctsp.so_luong > 0\s
+          AND ctsp.ten_ct LIKE %:tenTim%
+        ORDER BY ctsp.ngay_tao DESC;
+        
               """, nativeQuery = true)
     List<HomeRespone> getTimSanPham(@Param("tenTim") String tenTim);
 }
