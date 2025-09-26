@@ -89,7 +89,7 @@ export default function AddNhanVien() {
     // Kiểm tra tuổi (>= 18)
     const birthDate = values.ngaySinh ? new Date(values.ngaySinh) : null;
     if (!birthDate || Number.isNaN(birthDate.getTime())) {
-      toast.error("🦄 Ngày sinh không hợp lệ!");
+      toast.error("Ngày sinh không hợp lệ!");
       return;
     }
     const today = new Date();
@@ -101,7 +101,7 @@ export default function AddNhanVien() {
     )
       age--;
     if (age < 18) {
-      toast.error("🦄 Khách hàng chưa đủ 18 tuổi!");
+      toast.error("Khách hàng chưa đủ 18 tuổi!");
       return;
     }
 
@@ -112,7 +112,7 @@ export default function AddNhanVien() {
           sTrim(nv.email).toLowerCase() === sTrim(values.email).toLowerCase()
       )
     ) {
-      toast.error("🦄 Email đã tồn tại!");
+      toast.error("Email đã tồn tại!");
       return;
     }
 
@@ -121,7 +121,7 @@ export default function AddNhanVien() {
         (nv) => sTrim(nv.soDienThoai) === sTrim(values.soDienThoai)
       )
     ) {
-      toast.error("🦄 Số điện thoại đã tồn tại!");
+      toast.error("Số điện thoại đã tồn tại!");
       return;
     }
 
@@ -130,7 +130,7 @@ export default function AddNhanVien() {
         (nv) => sTrim(nv.canCuocCongDan) === sTrim(values.canCuocCongDan)
       )
     ) {
-      toast.error("🦄 Căn cước đã tồn tại!");
+      toast.error("Căn cước đã tồn tại!");
       return;
     }
 
@@ -155,12 +155,12 @@ export default function AddNhanVien() {
 
     NguoiDungAPI.create("nhan-vien",formData)
       .then(() => {
-        toast.success("🦄 Thêm nhân viên thành công!");
+        toast.success("Thêm nhân viên thành công!");
         nav("/admin-nhan-vien");
       })
       .catch((err) => {
         console.error(err);
-        toast.error("🦄 Thêm nhân viên thất bại!");
+        toast.error("Thêm nhân viên thất bại!");
       });
   };
 

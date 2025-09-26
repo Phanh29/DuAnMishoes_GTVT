@@ -24,7 +24,7 @@ const TraCuuDonHangClient = () => {
     //     if (res.data.id != null) {
 
     //       form.resetFields();
-    //       toast("🦄 Tra cứu đơn hàng thành công!", {
+    //       toast("Tra cứu đơn hàng thành công!", {
     //         position: "top-right",
     //         autoClose: 3000,
     //         hideProgressBar: false,
@@ -37,7 +37,7 @@ const TraCuuDonHangClient = () => {
     //       nav(`/hd/${res.data.id}`);
     //     }
 
-    //     toast("🦄 Tra cứu đơn hàng thất bại !", {
+    //     toast("Tra cứu đơn hàng thất bại !", {
     //       position: "top-right",
     //       autoClose: 3000,
     //       hideProgressBar: false,
@@ -50,7 +50,7 @@ const TraCuuDonHangClient = () => {
 
     //   })
     //   .catch(() => {
-    //     toast("🦄 Tra cứu đơn hàng thành công!", {
+    //     toast("Tra cứu đơn hàng thành công!", {
     //       position: "top-right",
     //       autoClose: 3000,
     //       hideProgressBar: false,

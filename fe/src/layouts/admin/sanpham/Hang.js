@@ -19,6 +19,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { BsFillEyeFill } from "react-icons/bs";
 import { PiTrademarkFill } from "react-icons/pi";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddHangModal from "./Modal/AddHangModal";
+import UpdateHang from "./Modal/UpdateHangModal";
 
 export default function Hang() {
   // ==== Helpers: bỏ dấu & chuẩn hoá chuỗi tìm kiếm ====
@@ -55,22 +57,6 @@ export default function Hang() {
   const loadHang = () => {
     ThuocTinhAPI.getAll("hang").then((res) => setHangs(res.data));
   };
-
-  // ==== Add ====
-  const addHang = (value) => {
-    const exists = hang.some((h) => norm(h.ten) === norm(value.ten || ""));
-    if (exists) {
-      toast.error("Hãng đã tồn tại!", { autoClose: 3000, theme: "light" });
-      return;
-    }
-    ThuocTinhAPI.create("hang", value).then(() => {
-      toast.success("✔️ Thêm thành công!", { autoClose: 3000, theme: "light" });
-      loadHang();
-      setOpen(false);
-      form.resetFields();
-    });
-  };
-
   // ==== Detail -> open update modal ====
   const showModal = async (id) => {
     await ThuocTinhAPI.detail("hang", id).then((res) => {
@@ -88,49 +74,6 @@ export default function Hang() {
       setHangUpdate(res.data);
     });
     setOpenUpdate(true);
-  };
-
-  // ==== Update ====
-  const updateHang = () => {
-    if (hangUpdate.ten !== tenCheck) {
-      const exists = hang.some(
-        (x) => norm(x.ten) === norm(hangUpdate.ten || "")
-      );
-      if (exists) {
-        toast.error("Hãng trùng với hãng khác!", {
-          autoClose: 3000,
-          theme: "light",
-        });
-        return;
-      }
-    }
-    ThuocTinhAPI.update("hang", hangUpdate.id, hangUpdate).then(() => {
-      toast.success("✔️ Sửa thành công!", { autoClose: 3000, theme: "light" });
-      setHangUpdate("");
-      loadHang();
-      setOpenUpdate(false);
-    });
-  };
-
-  // ==== Validate ====
-  const validateDateHang = () => {
-    const ten = (form.getFieldValue("ten") || "").trim();
-    if (!ten) return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_\-=\[\]{};':"\\|,.<>\/?]/.test(ten))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    if (ten.length > 30)
-      return Promise.reject("Tên không được vượt quá 30 ký tự");
-    return Promise.resolve();
-  };
-
-  const validateDateHangUpdate = () => {
-    const ten = (form1.getFieldValue("ten") || "").trim();
-    if (!ten) return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_\-=\[\]{};':"\\|,.<>\/?]/.test(ten))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    if (ten.length > 30)
-      return Promise.reject("Tên không được vượt quá 30 ký tự");
-    return Promise.resolve();
   };
 
   const validateDateTim = () => {
@@ -315,100 +258,31 @@ export default function Hang() {
 
           <div className="ms-3">
             {/* Modal Add  */}
-            <Modal
-              title="Thêm Hãng"
-              centered
+            <AddHangModal
               open={open}
-              onCancel={() => setOpen(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                form={form}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={addHang}
-              >
-                <Form.Item
-                  label="Tên"
-                  name="ten"
-                  hasFeedback
-                  rules={[{ required: true, validator: validateDateHang }]}
-                >
-                  <Input maxLength={31} className="border" />
-                </Form.Item>
-                <div className="text-end">
-                  <Button onClick={() => setOpen(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Thêm
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+              onClose={() => setOpen(false)}
+              form={form1}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              h={hang}
+              loadH={loadHang}
+            />
 
             {/* Modal Update  */}
-            <Modal
-              title="Sửa hãng"
-              centered
-              open={openUpdate}
-              onCancel={() => setOpenUpdate(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                {...formItemLayout}
-                form={form1}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={updateHang}
-              >
-                <Form.Item
-                  name="ten"
-                  label={<b>Tên</b>}
-                  hasFeedback
-                  rules={[
-                    { required: true, validator: validateDateHangUpdate },
-                  ]}
-                >
-                  <Input
-                    className="border"
-                    maxLength={31}
-                    value={hangUpdate?.ten}
-                    onChange={(e) =>
-                      setHangUpdate({ ...hangUpdate, ten: e.target.value })
-                    }
-                  />
-                </Form.Item>
-                <Form.Item name="trangThai" label={<b>Trạng thái</b>}>
-                  <Radio.Group
-                    value={hangUpdate?.trangThai}
-                    onChange={(e) =>
-                      setHangUpdate({
-                        ...hangUpdate,
-                        trangThai: e.target.value,
-                      })
-                    }
-                  >
-                    <Radio value={0}>Còn bán</Radio>
-                    <Radio value={1}>Dừng bán</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <div className="text-end">
-                  <Button onClick={() => setOpenUpdate(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Sửa
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+            <UpdateHang
+              openUpdate={openUpdate}
+              setOpenUpdate={setOpenUpdate}
+              form1={form1}
+              hangUpdate={hangUpdate}
+              setHangUpdate={setHangUpdate}
+              tenCheck={tenCheck}
+              hang={hang}
+              loadHang={loadHang}
+              norm={norm}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              formItemLayout={formItemLayout}
+            />
           </div>
 
           <div className="container-fluid mt-4">

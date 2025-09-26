@@ -21,7 +21,7 @@ const ModalDiaChi = (props) => {
     }
     NguoiDungAPI.updateDiaChiMacDinh(nowAddress)
       .then(() => {
-        toast.success("✔️ Cập nhật địa chỉ mặc định thành công!");
+        toast.success("Cập nhật địa chỉ mặc định thành công!");
         loadDiaChi();
         handleClose();
       })

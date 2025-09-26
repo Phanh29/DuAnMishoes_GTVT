@@ -91,7 +91,7 @@ export const ProductCard = ({ product }) => {
                 };
 
                 GioHangAPI.updateSLGHCT(GHCT).then((res) => {
-                  toast("✔️ Thêm thành công!", {
+                  toast.success("Thêm thành công!", {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -123,7 +123,7 @@ export const ProductCard = ({ product }) => {
                 };
 
                 GioHangAPI.addGHCT(data).then((res) => {
-                  toast("✔️ Thêm thành công!", {
+                  toast.success("Thêm thành công!", {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -171,7 +171,7 @@ export const ProductCard = ({ product }) => {
                   });
                 } else {
                   GioHangAPI.addGHCT(data).then((res) => {
-                    toast("✔️ Thêm thành công!", {
+                    toast.success("Thêm thành công!", {
                       position: "top-right",
                       autoClose: 5000,
                       hideProgressBar: false,
@@ -220,7 +220,7 @@ export const ProductCard = ({ product }) => {
               });
             } else {
               GioHangAPI.addGHCT(data).then((res) => {
-                toast("✔️ Thêm thành công!", {
+                toast.success("Thêm thành công!", {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -261,7 +261,7 @@ export const ProductCard = ({ product }) => {
           };
 
           GioHangAPI.updateSLGHCT(GHCT).then((res) => {
-            toast("✔️ Thêm thành công!", {
+            toast.success("Thêm thành công!", {
               position: "top-right",
               autoClose: 5000,
               hideProgressBar: false,
@@ -290,7 +290,7 @@ export const ProductCard = ({ product }) => {
               : ChiTietSanPham.price * soLuong,
           };
           GioHangAPI.addGHCT(data).then((res) => {
-            toast("✔️ Thêm thành công!", {
+            toast.success("Thêm thành công!", {
               position: "top-right",
               autoClose: 5000,
               hideProgressBar: false,

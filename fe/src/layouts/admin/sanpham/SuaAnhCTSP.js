@@ -67,7 +67,7 @@ const SuaAnhCTSP = ({ ten, idSP }) => {
       ChiTietSanPhamAPI.addAnhTheoMau(idSP, imageObject)
         .then((res) => {
           setLinkAnhList((prevData) => [...prevData, res.data])
-          toast('✔️ Thêm ảnh mới thành công!', {
+          toast.success('Thêm ảnh mới thành công!', {
             position: "top-right",
             autoClose: 2500,
             hideProgressBar: false,
