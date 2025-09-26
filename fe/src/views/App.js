@@ -39,10 +39,15 @@ import HoaDonDetail from "../layouts/admin/hoadon/HoaDonDetail";
 // đợt giảm giá 
 import DotGiamGia from "../layouts/admin/dotgiamgia/DotGiamGia";
 import ThemDotGiamGia from "../layouts/admin/dotgiamgia/ThemDotGiamGia";
+
+//client
 import { Home } from "../layouts/client/home/home";
 import { DashboardClient } from "../layouts/client/DashboardClient";
 import { CartProvider } from "../layouts/client/cart/CartContext";
 import { TimKiem } from "../layouts/client/home/TimKiem";
+import { SanPhamClient } from "../layouts/client/sanpham/SanPhamClient";
+import { ChinhSach } from "../layouts/client/chinhsach/ChinhSach";
+import TraCuuDonHangClient from "../layouts/client/tracuudonhang/TraCuuDonHangClient";
 
 function App() {
   return (
@@ -107,19 +112,22 @@ function App() {
               </GuestGuard>
             }
           />
-          {/* client */}
-
-          {/* <Route
+          <Route
             path="/san-pham"
             element={
               <GuestGuard>
-                <DashboardClient>
-                  <SanPhamClient />
-                </DashboardClient>
+                <CartProvider>
+                  <DashboardClient>
+                    <SanPhamClient />
+                  </DashboardClient>
+                </CartProvider>
               </GuestGuard>
             }
           />
-          <Route
+
+          {/* client */}
+
+          {/* <Route
             path="/gio-hang"
             element={
               <GuestGuard>
@@ -129,23 +137,40 @@ function App() {
               </GuestGuard>
             }
           />
+       */}
           <Route
-            path="/lien-he"
+            path="/tra-cuu-don-hang"
             element={
               <GuestGuard>
-                <DashboardClient>
-                  <LienHe />
-                </DashboardClient>
+                <CartProvider>
+                  <DashboardClient>
+                    <TraCuuDonHangClient />
+                  </DashboardClient>
+                </CartProvider>
               </GuestGuard>
             }
           />
           <Route
-            path="/tim-kiem/:ten"
+            path="/chinh-sach"
             element={
               <GuestGuard>
-                <DashboardClient>
-                  <TimKiemDashBoard />
-                </DashboardClient>
+                <CartProvider>
+                  <DashboardClient>
+                    <ChinhSach />
+                  </DashboardClient>
+                </CartProvider>
+              </GuestGuard>
+            }
+          />
+          <Route
+            path="/home-tim-kiem/:ten"
+            element={
+              <GuestGuard>
+                <CartProvider>
+                  <DashboardClient>
+                    <TimKiem />
+                  </DashboardClient>
+                </CartProvider>
               </GuestGuard>
             }
           />

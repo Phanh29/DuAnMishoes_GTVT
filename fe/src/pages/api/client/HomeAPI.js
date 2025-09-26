@@ -19,7 +19,7 @@ export class HomeAPI {
   static timKiemDashboard = (tenTim) => {
     return requestClient({
       method: "GET",
-      url: `/home/tim-kiem/${tenTim}`,
+      url: `/home-tim-kiem/${tenTim}`,
     });
   };
   static getAll = (attribute) => {
@@ -29,6 +29,42 @@ export class HomeAPI {
     });
   };
 
+  // sản phẩm
+  static getProductDetailByCtsp = (ctspId) => {
+    return requestClient({
+      method: "GET",
+      url: `/home/san-pham-detail/${ctspId}`,
+    });
+  };
+
+  //Get hãng
+  static getAllHang = () => {
+    return requestClient({
+      method: "GET",
+      url: `/home/hang`,
+    });
+  };
+  //Get màu sắc
+  static getAllMauSac = () => {
+    return requestClient({
+      method: "GET",
+      url: `/home/mau-sac`,
+    });
+  };
+  //Get kích thước
+  static getAllKichThuoc = () => {
+    return requestClient({
+      method: "GET",
+      url: `/home/kich-thuoc`,
+    });
+  };
+  //Tìm kiếm theo tên
+  static timKiem = (tenTim) => {
+    return requestClient({
+      method: "GET",
+      url: `/home/tim-kiem/${tenTim}`,
+    });
+  };
   // địa chỉ khách h
 
   static getDiaChiByKHClient = (id) => {
@@ -65,5 +101,4 @@ export class HomeAPI {
       data: data,
     });
   };
-
 } 

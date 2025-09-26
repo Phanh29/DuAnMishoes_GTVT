@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 import "./productCard.css";
 import { FaShoppingCart } from "react-icons/fa";
-import ModalDetailSP from "../shop/ModalDetailSP";
+import ModalDetailSP from "../sanpham/ModalDetailSP";
 import { GioHangAPI } from "../../../pages/api/client/gioHang/GioHangAPI";
 import { get, set } from "local-storage";
 import { useCart } from "../cart/CartContext";
@@ -34,6 +34,7 @@ export const ProductCard = ({ product }) => {
   };
 
   useEffect(() => {
+    // console.log(product);
     if (storedData!=null) {
       setKhachHang(storedData.userID);
     }
@@ -42,13 +43,6 @@ export const ProductCard = ({ product }) => {
     }
     // loadVoucherTotNhatVaVoucherTiepTheo();
   }, []);
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
   const [idCt, setidCTSP] = useState("");
   const detailCTSP = (row) => {
     setidCTSP(row);
@@ -382,41 +376,9 @@ export const ProductCard = ({ product }) => {
               </span>
             )}
           </div>
-          {/* <div className="buttons-container">
-            <a href="#" className="buy-button">
-              <FaShoppingCart size={20} className="icon" /> Buy Now
-            </a>
-            <button
-              className="details-button"
-              onClick={() => detailCTSP(product.idCt)}
-            >
-              <IoIosInformationCircle size={20} className="icon" />
-              Details
-            </button>
-            {idCt && (
-              <ModalDetailSP
-                openModalDetailSP={openModalDetailSP}
-                setOpenModalDetailSP={setOpenModalDetailSP}
-                idCt={idCt}
-                setidCTSP={setidCTSP}
-              />
-            )}
-          </div> */}
-
           <button href="#" className="button-35" onClick={()=>handleAddGioHang(product,1,khachHang)}>
             <FaShoppingCart size={20} className="icon" /> Mua ngay
           </button>
-          {/* <a
-            class="button-36"
-            role="button"
-            onClick={() => detailCTSP(product.idCt)}
-          >
-            <span class="text">
-              {" "}
-              <IoIosInformationCircle size={20} className="icon" />
-              Details
-            </span>
-          </a> */}
           <button class="button-36" onClick={() => detailCTSP(product.idCt)}>
             <span class="text">Xem chi tiết</span>
           </button>

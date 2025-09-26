@@ -3,6 +3,7 @@ import org.example.be.dto.respon.ThuocTinhRepo;
 import org.example.be.entity.MauSac;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +21,11 @@ public interface MauSacRespository extends JpaRepository<MauSac, String> {
     List<ThuocTinhRepo> getALLMS();
 
 
+    @Query("""
+        SELECT DISTINCT ms
+        FROM ChiTietSanPham ctsp
+        JOIN ctsp.mauSac ms
+        WHERE ctsp.sanPham.id = :idSanPham
+    """)
+    List<MauSac> findBySanPhamId(@Param("idSanPham") String idSanPham);
 }

@@ -5,6 +5,7 @@ import org.example.be.dto.respon.ThuocTinhRepo;
 import org.example.be.entity.KichThuoc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -14,5 +15,13 @@ public interface KichThuocRepository extends JpaRepository<KichThuoc, String> {
             """, nativeQuery = true)
     List<ThuocTinhRepo> getALLKT();
 
+
+    @Query("""
+        SELECT DISTINCT kt
+        FROM ChiTietSanPham ctsp
+        JOIN ctsp.kichThuoc kt
+        WHERE ctsp.sanPham.id = :idSanPham
+    """)
+    List<KichThuoc> findBySanPhamId(@Param("idSanPham") String idSanPham);
 
 }
