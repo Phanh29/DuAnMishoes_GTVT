@@ -8,10 +8,7 @@ import {
   Divider,
   InputNumber,
   Modal,
-  Table,
-  AutoComplete,
-  notification,
-  Cascader,
+  Table
 } from "antd";
 import { Link } from "react-router-dom";
 import { MdAddTask, MdDelete } from "react-icons/md";
@@ -35,6 +32,14 @@ import convert from "color-convert";
 import "./SanPham.css";
 import { ChiTietSanPhamAPI } from "../../../pages/api/sanpham/ChiTietSanPham.api";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddSanPhamModal from "./Modal/AddSanPhamModal";
+import AddChatLieuModal from "./Modal/AddChatLieuModal";
+import AddHangModal from "./Modal/AddHangModal";
+import AddDoCaoModal from "./Modal/AddDoCaoModal";
+import AddDanhMucModal from "./Modal/AddDanhMucModal";
+import AddKichThuocModal from "./Modal/AddKichThuoc";
+import AddMauSacModal from "./Modal/AddMauSac";
+import UpdateNhanhModal from "./Modal/UpdateNhanhModal";
 export default function AddSanPham() {
   //Form
   const nav = useNavigate();
@@ -246,15 +251,6 @@ export default function AddSanPham() {
     setColorGroups(Object.entries(groupedCTSP));
   };
 
-  const validateDateMoTa = (_, value) => {
-    const { getFieldValue } = form1;
-    const ten = getFieldValue("moTa");
-    if (ten.trim().length > 200) {
-      return Promise.reject("Mô tả không được vượt quá 200 ký tự");
-    }
-    return Promise.resolve();
-  };
-
   const [selectedColor, setSelectedColor] = useState(null);
   const handleUploadAnh = (tenMau) => {
     setSelectedColor(tenMau);
@@ -306,9 +302,10 @@ export default function AddSanPham() {
         return record;
       });
       setTableData(updatedData);
-      form1.resetFields();
+      setSelectedRowKeys([]);
+      form2.resetFields();
       setUpdateNhanhs(false);
-      toast("✔️ Sửa thành công!", {
+      toast.success("Sửa thành công!", {
         position: "top-right",
         autoClose: 2500,
         hideProgressBar: false,
@@ -330,6 +327,7 @@ export default function AddSanPham() {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+
   //Load table
   const columns = [
     {
@@ -429,13 +427,12 @@ export default function AddSanPham() {
       render: (_, record) => {
         return {
           children: (
-            <>
-              <CloudinaryUpload
-                onLinkAnhChange={(linkAnhList) =>
-                  handleLinkAnhChange(linkAnhList, record.tenMau)
-                }
-              />
-            </>
+            <CloudinaryUpload
+              linkAnhList={record.linkAnh || []} // truyền dữ liệu từ tableData xuống
+              onLinkAnhChange={(linkAnhList) =>
+                handleLinkAnhChange(linkAnhList, record.tenMau)
+              }
+            />
           ),
           props: {
             rowSpan: record.rowSpan,
@@ -495,7 +492,7 @@ export default function AddSanPham() {
         });
         return;
       }
-    } 
+    }
 
     for (let i = 0; i < tableData.length; i++) {
       if (tableData[i].giaBan === "" || tableData[i].giaBan < 100000) {
@@ -528,7 +525,7 @@ export default function AddSanPham() {
         return;
       }
     }
-    
+
     for (let i = 0; i < tableData.length; i++) {
       if (tableData[i].ghiChu == null) {
         toast.error("Không để trống ảnh!", {
@@ -556,7 +553,7 @@ export default function AddSanPham() {
         form.resetFields();
         setTableData([]);
         nav("/admin-san-pham");
-        toast("✔️ Thêm thành công!", {
+        toast.success("Thêm thành công!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -570,6 +567,7 @@ export default function AddSanPham() {
       .catch((error) => {
         console.error("Error:", error);
       });
+    console.log(tableData)
   };
 
   //Load san pham
@@ -583,125 +581,19 @@ export default function AddSanPham() {
       setOptionsSP(response.data);
     });
   };
-  const addSanPham = (value) => {
-    const checkTrung = (code) => {
-      return optionsSP.some(
-        (sp) => sp.ten.trim().toLowerCase() === code.trim().toLowerCase()
-      );
-    };
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("san-pham", value)
-        .then((response) => {
-          form1.resetFields();
-          setOpenSP(false);
-          loadSP();
-        })
-        .catch((error) => console.error("Error adding item:", error));
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Sản phẩm đã tồn tại !", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
   //Load Kích Thước
   const [openKT, setOpenKT] = useState(false);
   const [ktData, setKTData] = useState([]);
   useEffect(() => {
     loadKT();
   }, []);
-  const validateKichThuoc = (_, value) => {
-    const { getFieldValue } = formKT;
-    const tenKichThuoc = getFieldValue("ten");
-
-    if (!tenKichThuoc.trim()) {
-      return Promise.reject("Tên không được để trống");
-    }
-
-    const specialCharacterRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-    if (specialCharacterRegex.test(tenKichThuoc)) {
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    }
-
-    const kichThuoc = parseInt(value);
-    if (isNaN(kichThuoc) || kichThuoc < 34 || kichThuoc > 47) {
-      return Promise.reject("Đế giày phải là số nguyên từ 34 đến 47");
-    }
-
-    return Promise.resolve();
-  };
   const loadKT = async () => {
     ThuocTinhAPI.getAll("kich-thuoc").then((response) => {
       const data = response.data;
       setKTData(data);
     });
   };
-  const addKichThuoc = (value) => {
-    const checkTrung = (code) => {
-      return ktData.some(
-        (x) => x.ten.trim().toLowerCase() === code.trim().toLowerCase()
-      );
-    };
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("kich-thuoc", value)
-        .then((response) => {
-          formKT.resetFields();
-          setOpenKT(false);
-          loadKT();
-        })
-        .catch((error) => console.error("Error adding item:", error));
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Kích thước đã tồn tại !", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
   // Load Màu Sắc
-  const [ten, setTenMaus] = useState("");
-  const doiMau = (e) => {
-    const ma = e.target.value;
-    const hexCode = ma.replace("#", "").toUpperCase();
-    const rgb = convert.hex.rgb(hexCode);
-    const colorName = convert.rgb.keyword(rgb);
-    if (colorName === null) {
-    } else {
-      setTenMaus(colorName);
-    }
-  };
-
   const [openMS, setOpenMS] = useState(false);
   const [msData, setMSData] = useState([]);
   useEffect(() => {
@@ -713,44 +605,7 @@ export default function AddSanPham() {
       setMSData(data);
     });
   };
-  const addMauSac = (value) => {
-    const chekTrung = (code) => {
-      return msData.some((color) => color.ma === code);
-    };
-    if (!chekTrung(value.ma)) {
 
-      const hexCode = value.ma.replace("#", "").toUpperCase();
-      const rgb = convert.hex.rgb(hexCode);
-      const colorName = convert.rgb.keyword(rgb);
-      value.ten = colorName;
-      ThuocTinhAPI.create("mau-sac", value).then((res) => {
-        loadMS();
-        setOpenMS(false);
-        form1.resetFields();
-      });
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Mã màu đã tồn tại!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
   // Load Chất Liệu
   const [openCL, setOpenCL] = useState(false);
   const [cl, setCL] = useState([]);
@@ -763,66 +618,11 @@ export default function AddSanPham() {
       setCL(data);
     });
   };
-  const addChatLieu = (value) => {
-    const checkTrung = (code) => {
-      return cl.some(
-        (x) => x.ten.trim().toLowerCase() === code.trim().toLowerCase()
-      );
-    };
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("chat-lieu", value)
-        .then((response) => {
-          form1.resetFields();
-          setOpenCL(false);
-          loadCL();
-        })
-        .catch((error) => console.error("Error adding item:", error));
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Chất liệu đã tồn tại !", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
+
   // Load Độ Cao
   const [openDC, setOpenDC] = useState(false);
   const [dc, setDC] = useState([]);
-  const validateDeGiay = (_, value) => {
-    const { getFieldValue } = formDG;
-    const tenDeGiay = getFieldValue("ten");
 
-    if (!tenDeGiay.trim()) {
-      return Promise.reject("Tên không được để trống");
-    }
-
-    const specialCharacterRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-    if (specialCharacterRegex.test(tenDeGiay)) {
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    }
-
-    const deGiay = parseInt(value);
-    if (isNaN(deGiay) || deGiay < 1 || deGiay > 10) {
-      return Promise.reject("Đế giày phải là số nguyên từ 1 đến 10");
-    }
-
-    return Promise.resolve();
-  };
   useEffect(() => {
     loadDC();
   }, []);
@@ -832,43 +632,7 @@ export default function AddSanPham() {
       setDC(data);
     });
   };
-  const addDoCao = (value) => {
-    const checkTrung = (code) => {
-      return dc.some(
-        (x) => x.ten.trim().toLowerCase() === code.trim().toLowerCase()
-      );
-    };
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("de-giay", value)
-        .then((response) => {
-          formDG.resetFields();
-          setOpenDC(false);
-          loadDC();
-        })
-        .catch((error) => console.error("Error adding item:", error));
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Đế giày đã tồn tại !", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
+
   // Load Danh Mục
   const [openDM, setOpenDM] = useState(false);
   const [dm, setDM] = useState([]);
@@ -881,43 +645,7 @@ export default function AddSanPham() {
       setDM(data);
     });
   };
-  const addDanhMuc = (value) => {
-    const checkTrung = (code) => {
-      return dm.some(
-        (x) => x.ten.trim().toLowerCase() === code.trim().toLowerCase()
-      );
-    };
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("danh-muc", value)
-        .then((response) => {
-          form1.resetFields();
-          setOpenDM(false);
-          loadDM();
-        })
-        .catch((error) => console.error("Error adding item:", error));
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Danh mục đã tồn tại !", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
+ 
   // Load Hãng
   const [openH, setOpenH] = useState(false);
   const [h, setH] = useState([]);
@@ -930,43 +658,7 @@ export default function AddSanPham() {
       setH(data);
     });
   };
-  const addHang = (value) => {
-    const checkTrung = (code) => {
-      return h.some(
-        (x) => x.ten.trim().toLowerCase() === code.trim().toLowerCase()
-      );
-    };
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("hang", value)
-        .then((response) => {
-          form1.resetFields();
-          setOpenH(false);
-          loadH();
-        })
-        .catch((error) => console.error("Error adding item:", error));
-      toast("✔️ Thêm thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Hãng đã tồn tại !", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
-  };
+
 
   const validateSoLuong = (_, value) => {
     const { getFieldValue } = form;
@@ -1085,70 +777,15 @@ export default function AddSanPham() {
                     onClick={() => setOpenSP(true)}
                     icon={<PlusCircleOutlined />}
                   ></Button>
-                  <Modal
-                    title="Thêm Sản Phẩm"
-                    centered
+                  <AddSanPhamModal
                     open={openSP}
-                    onOk={() => setOpenSP(false)}
-                    onCancel={() => setOpenSP(false)}
-                    footer={[
-                      <Button onClick={() => setOpenSP(false)}>Hủy</Button>,
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          Modal.confirm({
-                            centered: true,
-                            title: "Thông báo",
-                            content: "Bạn có chắc chắn muốn thêm không?",
-                            onOk: () => {
-                              form1.submit();
-                            },
-                            footer: (_, { OkBtn, CancelBtn }) => (
-                              <>
-                                <CancelBtn />
-                                <OkBtn />
-                              </>
-                            ),
-                          });
-                        }}
-                      >
-                        Thêm
-                      </Button>,
-                    ]}
-                    width={500}
-                  >
-                    <Form
-                      initialValues={{
-                        size: componentSize,
-                      }}
-                      onValuesChange={onFormLayoutChange}
-                      size={componentSize}
-                      style={{
-                        maxWidth: 1000,
-                      }}
-                      onFinish={addSanPham}
-                      form={form1}
-                    >
-                      <div className="row">
-                        <div className="container">
-                          <Form.Item
-                            label="Tên"
-                            name="ten"
-                            hasFeedback
-                            rules={[
-                              {
-                                required: true,
-                                message:
-                                  "Vui lòng không để trống tên sản phẩm !",
-                              },
-                            ]}
-                          >
-                            <Input className="border" />
-                          </Form.Item>
-                        </div>
-                      </div>
-                    </Form>
-                  </Modal>
+                    onClose={() => setOpenSP(false)}
+                    form={form1}
+                    componentSize={componentSize}
+                    onFormLayoutChange={onFormLayoutChange}
+                    loadSP={loadSP}
+                    optionsSP={optionsSP}
+                  />
                 </Form.Item>
               </div>
               {/* Mô Tả */}
@@ -1206,59 +843,15 @@ export default function AddSanPham() {
                         onClick={() => setOpenCL(true)}
                         icon={<PlusCircleOutlined />}
                       ></Button>
-                      <Modal
-                        title="Thêm Chất Liệu"
-                        centered
+                      <AddChatLieuModal
                         open={openCL}
-                        onOk={() => setOpenCL(false)}
-                        onCancel={() => setOpenCL(false)}
-                        footer={[
-                          <Button onClick={() => setOpenCL(false)}>Hủy</Button>,
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              Modal.confirm({
-                                centered: true,
-                                title: "Thông báo",
-                                content: "Bạn có chắc chắn muốn thêm không?",
-                                onOk: () => {
-                                  form1.submit();
-                                },
-                                footer: (_, { OkBtn, CancelBtn }) => (
-                                  <>
-                                    <CancelBtn />
-                                    <OkBtn />
-                                  </>
-                                ),
-                              });
-                            }}
-                          >
-                            Thêm
-                          </Button>,
-                        ]}
-                        width={500}
-                      >
-                        <Form
-                          initialValues={{
-                            size: componentSize,
-                          }}
-                          onValuesChange={onFormLayoutChange}
-                          size={componentSize}
-                          style={{
-                            maxWidth: 1000,
-                          }}
-                          onFinish={addChatLieu}
-                          form={form1}
-                        >
-                          <div className="row">
-                            <div className="container">
-                              <Form.Item label="Tên" name="ten">
-                                <Input className="border" />
-                              </Form.Item>
-                            </div>
-                          </div>
-                        </Form>
-                      </Modal>
+                        onClose={() => setOpenCL(false)}
+                        form={form1}
+                        componentSize={componentSize}
+                        onFormLayoutChange={onFormLayoutChange}
+                        cl={cl}
+                        loadCL={loadCL}
+                      />
                     </Form.Item>
                   </div>
                 </div>
@@ -1291,69 +884,15 @@ export default function AddSanPham() {
                         onClick={() => setOpenH(true)}
                         icon={<PlusCircleOutlined />}
                       ></Button>
-                      <Modal
-                        title="Thêm Hãng"
-                        centered
+                      <AddHangModal
                         open={openH}
-                        onOk={() => setOpenH(false)}
-                        onCancel={() => setOpenH(false)}
-                        footer={[
-                          <Button onClick={() => setOpenH(false)}>Hủy</Button>,
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              Modal.confirm({
-                                centered: true,
-                                title: "Thông báo",
-                                content: "Bạn có chắc chắn muốn thêm không?",
-                                onOk: () => {
-                                  form1.submit();
-                                },
-                                footer: (_, { OkBtn, CancelBtn }) => (
-                                  <>
-                                    <CancelBtn />
-                                    <OkBtn />
-                                  </>
-                                ),
-                              });
-                            }}
-                          >
-                            Thêm
-                          </Button>,
-                        ]}
-                        width={500}
-                      >
-                        <Form
-                          initialValues={{
-                            size: componentSize,
-                          }}
-                          onValuesChange={onFormLayoutChange}
-                          size={componentSize}
-                          style={{
-                            maxWidth: 1000,
-                          }}
-                          onFinish={addHang}
-                          form={form1}
-                        >
-                          <div className="row">
-                            <div className="container">
-                              <Form.Item
-                                label="Tên"
-                                name="ten"
-                                hasFeedback
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: "Vui lòng không để trống tên!",
-                                  },
-                                ]}
-                              >
-                                <Input className="border" />
-                              </Form.Item>
-                            </div>
-                          </div>
-                        </Form>
-                      </Modal>
+                        onClose={() => setOpenH(false)}
+                        form={form1}
+                        componentSize={componentSize}
+                        onFormLayoutChange={onFormLayoutChange}
+                        h={h}
+                        loadH={loadH}
+                      />
                     </Form.Item>
                   </div>
                 </div>
@@ -1390,64 +929,15 @@ export default function AddSanPham() {
                         onClick={() => setOpenDC(true)}
                         icon={<PlusCircleOutlined />}
                       ></Button>
-                      <Modal
-                        title="Thêm Độ Cao"
-                        centered
+                      <AddDoCaoModal
                         open={openDC}
-                        onOk={() => setOpenDC(false)}
-                        onCancel={() => setOpenDC(false)}
-                        footer={[
-                          <Button onClick={() => setOpenDC(false)}>Hủy</Button>,
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              Modal.confirm({
-                                centered: true,
-                                title: "Thông báo",
-                                content: "Bạn có chắc chắn muốn thêm không?",
-                                onOk: () => {
-                                  formDG.submit();
-                                },
-                                footer: (_, { OkBtn, CancelBtn }) => (
-                                  <>
-                                    <CancelBtn />
-                                    <OkBtn />
-                                  </>
-                                ),
-                              });
-                            }}
-                          >
-                            Thêm
-                          </Button>,
-                        ]}
-                        width={500}
-                      >
-                        <Form
-                          initialValues={{
-                            size: componentSize,
-                          }}
-                          onValuesChange={onFormLayoutChange}
-                          size={componentSize}
-                          style={{
-                            maxWidth: 1000,
-                          }}
-                          onFinish={addDoCao}
-                          form={formDG}
-                        >
-                          <div className="row">
-                            <div className="container">
-                              <Form.Item
-                                label="Tên"
-                                name="ten"
-                                hasFeedback
-                                rules={[{ validator: validateDeGiay }]}
-                              >
-                                <Input className="border" />
-                              </Form.Item>
-                            </div>
-                          </div>
-                        </Form>
-                      </Modal>
+                        onClose={() => setOpenDC(false)}
+                        form={formDG}
+                        componentSize={componentSize}
+                        onFormLayoutChange={onFormLayoutChange}
+                        dc={dc}
+                        loadDC={loadDC}
+                      />
                     </Form.Item>
                   </div>
                 </div>
@@ -1481,69 +971,15 @@ export default function AddSanPham() {
                         onClick={() => setOpenDM(true)}
                         icon={<PlusCircleOutlined />}
                       ></Button>
-                      <Modal
-                        title="Thêm Danh Mục"
-                        centered
+                      <AddDanhMucModal
                         open={openDM}
-                        onOk={() => setOpenDM(false)}
-                        onCancel={() => setOpenDM(false)}
-                        footer={[
-                          <Button onClick={() => setOpenDM(false)}>Hủy</Button>,
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              Modal.confirm({
-                                centered: true,
-                                title: "Thông báo",
-                                content: "Bạn có chắc chắn muốn thêm không?",
-                                onOk: () => {
-                                  form1.submit();
-                                },
-                                footer: (_, { OkBtn, CancelBtn }) => (
-                                  <>
-                                    <CancelBtn />
-                                    <OkBtn />
-                                  </>
-                                ),
-                              });
-                            }}
-                          >
-                            Thêm
-                          </Button>,
-                        ]}
-                        width={500}
-                      >
-                        <Form
-                          initialValues={{
-                            size: componentSize,
-                          }}
-                          onValuesChange={onFormLayoutChange}
-                          size={componentSize}
-                          style={{
-                            maxWidth: 1000,
-                          }}
-                          onFinish={addDanhMuc}
-                          form={form1}
-                        >
-                          <div className="row">
-                            <div className="container">
-                              <Form.Item
-                                label="Tên"
-                                name="ten"
-                                hasFeedback
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: "Vui lòng không để trống tên!",
-                                  },
-                                ]}
-                              >
-                                <Input className="border" />
-                              </Form.Item>
-                            </div>
-                          </div>
-                        </Form>
-                      </Modal>
+                        onClose={() => setOpenDM(false)}
+                        form={form1}
+                        componentSize={componentSize}
+                        onFormLayoutChange={onFormLayoutChange}
+                        dm={dm}
+                        loadDM={loadDM}
+                      />
                     </Form.Item>
                   </div>
                 </div>
@@ -1658,63 +1094,15 @@ export default function AddSanPham() {
                       onClick={() => setOpenKT(true)}
                       icon={<PlusCircleOutlined />}
                     ></Button>
-                    <Modal
-                      title="Thêm Kích Thước"
-                      centered
+                    <AddKichThuocModal
                       open={openKT}
-                      onOk={() => setOpenKT(false)}
-                      onCancel={() => setOpenKT(false)}
-                      footer={[
-                        <Button onClick={() => setOpenKT(false)}>Hủy</Button>,
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            Modal.confirm({
-                              title: "Thông báo",
-                              content: "Bạn có chắc chắn muốn thêm không?",
-                              onOk: () => {
-                                formKT.submit();
-                              },
-                              footer: (_, { OkBtn, CancelBtn }) => (
-                                <>
-                                  <CancelBtn />
-                                  <OkBtn />
-                                </>
-                              ),
-                            });
-                          }}
-                        >
-                          Thêm
-                        </Button>,
-                      ]}
-                      width={500}
-                    >
-                      <Form
-                        initialValues={{
-                          size: componentSize,
-                        }}
-                        onValuesChange={onFormLayoutChange}
-                        size={componentSize}
-                        style={{
-                          maxWidth: 1000,
-                        }}
-                        onFinish={addKichThuoc}
-                        form={formKT}
-                      >
-                        <div className="row">
-                          <div className="container">
-                            <Form.Item
-                              label="Tên"
-                              name="ten"
-                              hasFeedback
-                              rules={[{ validator: validateKichThuoc }]}
-                            >
-                              <Input type="number" className="border" />
-                            </Form.Item>
-                          </div>
-                        </div>
-                      </Form>
-                    </Modal>
+                      onClose={() => setOpenKT(false)}
+                      form={formKT}
+                      componentSize={componentSize}
+                      onFormLayoutChange={onFormLayoutChange}
+                      ktData={ktData}
+                      loadKT={loadKT}
+                    />
                     <br />
                   </Form.Item>
                 </div>
@@ -1736,7 +1124,7 @@ export default function AddSanPham() {
                     <Select
                       style={{
                         width: 613,
-                        height: "50px",
+                        height: 50,
                       }}
                       mode="multiple"
                       placeholder="Chọn một giá trị"
@@ -1750,7 +1138,7 @@ export default function AddSanPham() {
                               backgroundColor: `${item.ma}`,
                               borderRadius: 6,
                               width: 60,
-                              height: 20,
+                              height: 22,
                             }}
                             className="custom-div"
                           >
@@ -1771,104 +1159,16 @@ export default function AddSanPham() {
                       onClick={() => setOpenMS(true)}
                       icon={<PlusCircleOutlined />}
                     ></Button>
-                    <Modal
-                      title="Thêm Màu Sắc"
-                      centered
+                    <AddMauSacModal
                       open={openMS}
-                      onOk={() => setOpenMS(false)}
-                      onCancel={() => setOpenMS(false)}
-                      footer={[
-                        <Button onClick={() => setOpenMS(false)}>Hủy</Button>,
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            Modal.confirm({
-                              centered: true,
-                              title: "Thông báo",
-                              content: "Bạn có chắc chắn muốn thêm không?",
-                              onOk: () => {
-                                form3.submit();
-                              },
-                              footer: (_, { OkBtn, CancelBtn }) => (
-                                <>
-                                  <CancelBtn />
-                                  <OkBtn />
-                                </>
-                              ),
-                            });
-                          }}
-                        >
-                          Thêm
-                        </Button>,
-                      ]}
-                      width={500}
-                    >
-                      <Form
-                        {...formItemLayout}
-                        initialValues={{
-                          size: componentSize,
-                        }}
-                        onValuesChange={onFormLayoutChange}
-                        size={componentSize}
-                        onFinish={addMauSac}
-                        layout="vertical"
-                        form={form3}
-                      >
-                        <div className="row">
-                          <div className="col-md-6">
-                            <label>
-                              <b>Màu sắc :</b>
-                            </label>
-                            <Form.Item
-                              name="ma"
-                              hasFeedback
-                              rules={[
-                                {
-                                  required: true,
-                                  message: "Vui lòng chọn màu",
-                                },
-                              ]}
-                            >
-                              <Input
-                                className="card-mau"
-                                type="color"
-                                onChange={doiMau}
-                              />
-                            </Form.Item>
-                          </div>
-                          <div className="col-md-6 mt-5">
-                            <label>
-                              <b>Mã màu :</b>
-                            </label>
-                            <Form.Item
-                              name="ma"
-                              hasFeedback
-                              rules={[{ required: true, message: "" }]}
-                            >
-                              <Input
-                                readOnly="true"
-                                className="border"
-                                type="text"
-                              />
-                            </Form.Item>
-                            <label>
-                              <b>Tên màu :</b>
-                            </label>
-                            <Form.Item
-                              hasFeedback
-                              rules={[
-                                {
-                                  required: true,
-                                  message: "Vui lòng không để trống tên!",
-                                },
-                              ]}
-                            >
-                              <Input type="text" value={ten} />
-                            </Form.Item>
-                          </div>
-                        </div>
-                      </Form>
-                    </Modal>
+                      onClose={() => setOpenMS(false)}
+                      form={form3}
+                      componentSize={componentSize}
+                      onFormLayoutChange={onFormLayoutChange}
+                      formItemLayout={formItemLayout}
+                      msData={msData}
+                      loadMS={loadMS}
+                    />
                   </Form.Item>
                 </div>
               </div>
@@ -1907,88 +1207,15 @@ export default function AddSanPham() {
                 >
                   Sửa nhanh số lượng & giá bán
                 </Button>
-                <Modal
-                  title=" Sửa nhanh số lượng & giá bán"
-                  centered
+                <UpdateNhanhModal
                   open={openUpdateNhanh}
-                  onOk={() => setUpdateNhanhs(false)}
-                  onCancel={() => setUpdateNhanhs(false)}
-                  footer={[
-                    <Button onClick={() => setUpdateNhanhs(false)}>Hủy</Button>,
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        Modal.confirm({
-                          centered: true,
-                          title: "Thông báo",
-                          content:
-                            "Bạn có chắc chắn muốn sửa số lượng & giá không?",
-                          onOk: () => {
-                            form2.submit();
-                          },
-                          footer: (_, { OkBtn, CancelBtn }) => (
-                            <>
-                              <CancelBtn />
-                              <OkBtn />
-                            </>
-                          ),
-                        });
-                      }}
-                    >
-                      Sửa
-                    </Button>,
-                  ]}
-                  width={500}
-                >
-                  <Form
-                    {...formItemLayout}
-                    initialValues={{
-                      size: componentSize,
-                    }}
-                    onValuesChange={onFormLayoutChange}
-                    size={componentSize}
-                    style={{
-                      maxWidth: 1000,
-                    }}
-                    onFinish={updateNhanh}
-                    form={form2}
-                  >
-                    <Form.Item
-                      name="soLuong"
-                      label={<b>Số lượng</b>}
-                      hasFeedback
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng không để trống số lượng !",
-                        },
-                      ]}
-                    >
-                      <Input className="border"></Input>
-                    </Form.Item>
-                    <Form.Item
-                      name="giaBan"
-                      label={<b>Giá bán</b>}
-                      hasFeedback
-                      rules={[
-                        {
-                          required: true,
-                          message: "Vui lòng không để trống giá bán !",
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        className="border"
-                        style={{ width: 376 }}
-                        defaultValue={0}
-                        formatter={(value) =>
-                          `VND ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                        }
-                        parser={(value) => value.replace(/\VND\s?|(,*)/g, "")}
-                      />
-                    </Form.Item>
-                  </Form>
-                </Modal>
+                  onClose={() => setUpdateNhanhs(false)}
+                  form={form2}
+                  updateNhanh={updateNhanh}
+                  componentSize={componentSize}
+                  onFormLayoutChange={onFormLayoutChange}
+                  formItemLayout={formItemLayout}
+                />
               </div>
               <Table
                 dataSource={processedData}
@@ -2034,9 +1261,17 @@ export default function AddSanPham() {
           </div>
         </Form>
       </div>
-      <ToastContainer />
-      {/* Same as */}
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

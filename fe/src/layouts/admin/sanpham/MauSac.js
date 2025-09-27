@@ -23,8 +23,18 @@ import { BsFillEyeFill } from "react-icons/bs";
 import { IoColorPalette } from "react-icons/io5";
 import convert from "color-convert";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddMauSacModal from "./Modal/AddMauSac";
+import UpdateMauSac from "./Modal/UpdateMauSac";
 
 export default function MauSac() {
+  const formItemLayout = {
+    labelCol: {
+      span: 4,
+    },
+    wrapperCol: {
+      span: 20,
+    },
+  };
   // ===== Helpers: bỏ dấu để tìm kiếm không phân biệt dấu =====
   const removeVietnameseTones = (str = "") =>
     String(str)
@@ -80,89 +90,12 @@ export default function MauSac() {
     });
   }, [mauSac, statusWatch, tokenized]);
 
-  // ===== Validate =====
-  const validateDateMauSac = () => {
-    const ten = (form.getFieldValue("ten") || "").trim();
-    if (!ten) return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_\-=\[\]{};':"\\|,.<>\/?]/.test(ten))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    if (ten.length > 50)
-      return Promise.reject("Tên không được vượt quá 50 ký tự");
-    return Promise.resolve();
-  };
-  const validateDateMauSacUpdate = () => {
-    const ten = (form1.getFieldValue("ten") || "").trim();
-    if (!ten) return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_\-=\[\]{};':"\\|,.<>\/?]/.test(ten))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    if (ten.length > 50)
-      return Promise.reject("Tên không được vượt quá 50 ký tự");
-    return Promise.resolve();
-  };
   const validateDateTim = () => {
     const ten = (formTim.getFieldValue("ten") || "").trim();
     if (ten.length > 30)
       return Promise.reject("Tên không được vượt quá 30 ký tự");
     return Promise.resolve();
   };
-
-  // ====== Handlers đổi màu (tự động gợi ý tên màu) ======
-  const doiMau = (e) => {
-    const hex = (e?.target?.value || "").replace("#", "").toUpperCase();
-    if (!hex) return;
-    const rgb = convert.hex.rgb(hex);
-    const colorName = convert.rgb.keyword(rgb);
-    form.setFieldsValue({
-      ma: `#${hex}`,
-      ten: colorName ?? form.getFieldValue("ten"),
-    });
-  };
-  const doiMauUpdate = (e) => {
-    const hex = (e?.target?.value || "").replace("#", "").toUpperCase();
-    if (!hex) return;
-    const rgb = convert.hex.rgb(hex);
-    const colorName = convert.rgb.keyword(rgb);
-    setmsUpdates((prev) => ({
-      ...prev,
-      ma: `#${hex}`,
-      ten: colorName ?? prev.ten,
-    }));
-    form1.setFieldsValue({
-      ma: `#${hex}`,
-      ten: colorName ?? form1.getFieldValue("ten"),
-    });
-  };
-
-  // ====== Add ======
-  const addMauSac = (value) => {
-    const ten = (value.ten || "").toLowerCase().trim();
-    const ma = (value.ma || "").trim();
-    const trTen = mauSac.some(
-      (x) => (x.ten || "").toLowerCase().trim() === ten
-    );
-    if (trTen) {
-      toast.error("Tên màu trùng với màu sắc khác!", {
-        autoClose: 2500,
-        theme: "light",
-      });
-      return;
-    }
-    const trMa = mauSac.some((x) => (x.ma || "").trim() === ma);
-    if (trMa) {
-      toast.error("Mã màu trùng với màu sắc khác!", {
-        autoClose: 2500,
-        theme: "light",
-      });
-      return;
-    }
-    ThuocTinhAPI.create("mau-sac", value).then(() => {
-      toast.success("✔️ Thêm thành công!");
-      loadMauSac();
-      setOpen(false);
-      form.resetFields();
-    });
-  };
-
   // ====== Detail → open Update ======
   const showModal = async (id) => {
     const res = await ThuocTinhAPI.detail("mau-sac", id);
@@ -182,45 +115,6 @@ export default function MauSac() {
     setMaCheck(data.ma);
     setOpenUpdate(true);
   };
-
-  // ====== Update ======
-  const updateMauSac = () => {
-    // check trùng tên
-    if (msUpdate.ten !== tenCheck) {
-      const trTen = mauSac.some(
-        (x) =>
-          (x.ten || "").toLowerCase().trim() ===
-          (msUpdate.ten || "").toLowerCase().trim()
-      );
-      if (trTen) {
-        toast.error("Tên màu trùng với màu sắc khác!", {
-          autoClose: 2500,
-          theme: "light",
-        });
-        return;
-      }
-    }
-    // check trùng mã
-    if (msUpdate.ma !== maCheck) {
-      const trMa = mauSac.some(
-        (x) => (x.ma || "").trim() === (msUpdate.ma || "").trim()
-      );
-      if (trMa) {
-        toast.error("Mã màu trùng với màu sắc khác!", {
-          autoClose: 2500,
-          theme: "light",
-        });
-        return;
-      }
-    }
-    ThuocTinhAPI.update("mau-sac", msUpdate.id, msUpdate).then(() => {
-      toast.success("✔️ Sửa thành công!");
-      setmsUpdates({});
-      loadMauSac();
-      setOpenUpdate(false);
-    });
-  };
-
   // ====== Columns ======
   const columns = [
     {
@@ -246,20 +140,17 @@ export default function MauSac() {
     {
       title: "Màu",
       dataIndex: "ma",
-      key: "swatch",
-      align: "center",
-      render: (val) => (
-        <div
-          style={{
-            backgroundColor: val,
+      key: "Ma",
+      render: (text, record) => {
+        return <>
+          <div style={{
+            backgroundColor: `${record.ma}`,
             borderRadius: 6,
             width: 60,
             height: 25,
-            border: "1px solid #ddd",
-          }}
-          title={val}
-        />
-      ),
+          }} className='custom-div'></div >
+        </>;
+      }
     },
     {
       title: "Trạng thái",
@@ -389,165 +280,30 @@ export default function MauSac() {
 
           <div className="ms-3">
             {/* Modal Thêm */}
-            <Modal
-              title="Thêm Màu Sắc"
-              centered
+            <AddMauSacModal
               open={open}
-              onCancel={() => setOpen(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                form={form}
-                layout="vertical"
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                onFinish={addMauSac}
-              >
-                <div className="row">
-                  <div className="col-md-6">
-                    <label>
-                      <b>Màu sắc :</b>
-                    </label>
-                    <Form.Item
-                      name="ma"
-                      hasFeedback
-                      rules={[{ required: true, message: "Vui lòng chọn màu" }]}
-                    >
-                      <Input
-                        className="card-mau"
-                        type="color"
-                        onChange={doiMau}
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div className="col-md-6 mt-3">
-                    <label>
-                      <b>Mã màu :</b>
-                    </label>
-                    <Input
-                      readOnly
-                      className="border mb-3"
-                      value={form.getFieldValue("ma") || ""}
-                    />
-
-                    <label>
-                      <b>Tên màu :</b>
-                    </label>
-                    <Form.Item
-                      name="ten"
-                      hasFeedback
-                      rules={[{ validator: validateDateMauSac }]}
-                    >
-                      <Input maxLength={51} placeholder="Tên màu" />
-                    </Form.Item>
-                  </div>
-                </div>
-
-                <div className="text-end">
-                  <Button onClick={() => setOpen(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Thêm
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+              onClose={() => setOpen(false)}
+              form={form}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              formItemLayout={formItemLayout}
+              msData={mauSac}
+              loadMS={loadMauSac}
+            />
 
             {/* Modal Sửa */}
-            <Modal
-              title="Sửa Màu Sắc"
-              centered
-              open={openUpdate}
-              onCancel={() => setOpenUpdate(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                form={form1}
-                layout="vertical"
-                initialValues={{ size: componentSize }}
-                size={componentSize}
-                onFinish={updateMauSac}
-              >
-                <div className="row">
-                  <div className="col-md-6">
-                    <label>
-                      <b>Màu sắc :</b>
-                    </label>
-                    <Form.Item
-                      name="ma"
-                      hasFeedback
-                      rules={[{ required: true, message: "Vui lòng chọn màu" }]}
-                    >
-                      <Input
-                        className="card-mau"
-                        type="color"
-                        onChange={doiMauUpdate}
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div className="col-md-6 mt-3">
-                    <label>
-                      <b>Mã màu :</b>
-                    </label>
-                    <Input
-                      readOnly
-                      className="border mb-3"
-                      value={msUpdate?.ma || ""}
-                    />
-
-                    <label>
-                      <b>Tên màu :</b>
-                    </label>
-                    <Form.Item
-                      name="ten"
-                      hasFeedback
-                      rules={[{ validator: validateDateMauSacUpdate }]}
-                    >
-                      <Input
-                        maxLength={51}
-                        value={msUpdate?.ten}
-                        onChange={(e) =>
-                          setmsUpdates({ ...msUpdate, ten: e.target.value })
-                        }
-                      />
-                    </Form.Item>
-
-                    <label>
-                      <b>Trạng thái :</b>
-                    </label>
-                    <Form.Item>
-                      <Radio.Group
-                        value={msUpdate?.trangThai}
-                        onChange={(e) =>
-                          setmsUpdates({
-                            ...msUpdate,
-                            trangThai: e.target.value,
-                          })
-                        }
-                      >
-                        <Radio value={0}>Còn bán</Radio>
-                        <Radio value={1}>Dừng bán</Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                  </div>
-                </div>
-
-                <div className="text-end">
-                  <Button onClick={() => setOpenUpdate(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Sửa
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+            <UpdateMauSac
+              openUpdate={openUpdate}
+              setOpenUpdate={setOpenUpdate}
+              form1={form1}
+              msUpdate={msUpdate}
+              setmsUpdates={setmsUpdates}
+              tenCheck={tenCheck}
+              maCheck={maCheck}
+              mauSac={mauSac}
+              loadMauSac={loadMauSac}
+              formItemLayout={formItemLayout}
+            />
           </div>
 
           <div className="container-fluid mt-4">
@@ -567,8 +323,6 @@ export default function MauSac() {
           </div>
         </div>
       </div>
-
-      {/* Nếu bạn đã có ToastContainer ở App.js, có thể xoá 2 block dưới */}
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -580,7 +334,6 @@ export default function MauSac() {
         pauseOnHover
         theme="light"
       />
-      <ToastContainer />
     </div>
   );
 }

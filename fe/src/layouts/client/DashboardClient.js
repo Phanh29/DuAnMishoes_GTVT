@@ -20,6 +20,7 @@ import { get } from "local-storage";
 import { useCart } from "./cart/CartContext";
 
 import logoShop from "../../assets/images/logoNgang1.png";
+import { colors } from "@material-ui/core";
 
 const { Header, Content, Footer } = Layout;
 
@@ -65,8 +66,8 @@ export const DashboardClient = ({ children }) => {
   };
 
   const onSearch = (value) => {
-    if (!value.trim()) return;
-    nav(`/home-tim-kiem/${value.trim()}`);
+    const keyword = value && value.trim() ? value.trim() : "allsanpham";
+    nav(`/home-tim-kiem/${keyword}`);
     setValueSearch("");
   };
 
@@ -99,11 +100,11 @@ export const DashboardClient = ({ children }) => {
           { path: "/chinh-sach", label: "Chính sách" },
         ].map((item, idx) => (
           <Col
-            span={2}
+            span={3}
             key={idx}
             className="d-flex align-items-center justify-content-center"
           >
-            <Link to={item.path} className="text-decoration-none">
+            <Link to={item.path} className="text-decoration-none" style={{color: "black"}}>
               <h6 className="button-menu-trai d-flex align-items-center mt-1">
                 {item.label}
               </h6>

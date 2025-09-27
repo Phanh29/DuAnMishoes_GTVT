@@ -86,6 +86,7 @@ const ModalDetailSP = ({
   const taoMa = (n = 6, c = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") =>
   Array.from({ length: n }, () => c[(Math.random() * c.length) | 0]).join("");
 
+
 // Ưu tiên khuyến mãi từ tham số km nếu có; fallback dùng dữ liệu của variant
 const tinhTien = (v, q, km) => {
   const loai = km?.loaiKM ?? v?.loaiKM;
@@ -108,6 +109,10 @@ const tinhTien = (v, q, km) => {
   const t = await GioHangAPI.addGH({ ma: taoMa(), khachHang: null });
   set("GioHang", t?.data);
   return t?.data;
+      "KM="  ,km
+    );
+    // TODO: gọi API add giỏ hàng
+    toast.success("Thêm thành công!", { position: "top-right" });
   };
 
   const upsertGhct = async (gioHangId, ctsp, soLuong, thanhTien) => {

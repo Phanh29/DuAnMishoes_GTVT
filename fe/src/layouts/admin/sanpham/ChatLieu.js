@@ -22,6 +22,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { GiMaterialsScience } from "react-icons/gi";
 import { BsFillEyeFill } from "react-icons/bs";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddChatLieuModal from "./Modal/AddChatLieuModal";
+import UpdateChatLieu from "./Modal/UpdateChatLieuModal";
 
 export default function ChatLieu() {
   // Helpers: bỏ dấu & chuẩn hóa
@@ -61,30 +63,6 @@ export default function ChatLieu() {
     ThuocTinhAPI.getAll("chat-lieu").then((res) => setChatLieus(res.data));
   };
 
-  // Add
-  const addChatLieu = (value) => {
-    const checkTrung = (code) =>
-      chatLieu.some((cl) => norm(cl.ten) === norm(code));
-
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("chat-lieu", value).then(() => {
-        toast("✔️ Thêm thành công!", {
-          position: "top-right",
-          autoClose: 5000,
-          theme: "light",
-        });
-        loadChatLieu();
-        setOpen(false);
-        form.resetFields();
-      });
-    } else {
-      toast.error("Chất liệu đã tồn tại!", {
-        position: "top-right",
-        autoClose: 5000,
-        theme: "light",
-      });
-    }
-  };
 
   // Detail -> open Update modal
   const showModal = async (id) => {
@@ -103,63 +81,6 @@ export default function ChatLieu() {
       setClUpdate(res.data);
     });
     setOpenUpdate(true);
-  };
-
-  // Update
-  const updateChatLieu = () => {
-    if (clUpdate.ten !== tenCheck) {
-      const checkTrung = (ten) =>
-        chatLieu.some((x) => norm(x.ten) === norm(ten));
-      if (checkTrung(clUpdate.ten)) {
-        toast.error("Chất liệu trùng với chất liệu khác !", {
-          position: "top-right",
-          autoClose: 5000,
-          theme: "light",
-        });
-        return;
-      }
-    }
-    ThuocTinhAPI.update("chat-lieu", clUpdate.id, clUpdate).then(() => {
-      toast("✔️ Sửa thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        theme: "light",
-      });
-      setClUpdate("");
-      loadChatLieu();
-      setOpenUpdate(false);
-    });
-  };
-
-  // Validate rules
-  const validateDateAdd = () => {
-    const tenTim = form.getFieldValue("ten");
-    if (tenTim === undefined || !tenTim.trim()) {
-      return Promise.reject("Tên không được để trống");
-    }
-    const specialCharacterRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-    if (specialCharacterRegex.test(tenTim)) {
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    }
-    if (tenTim.trim().length > 30) {
-      return Promise.reject("Tên không được vượt quá 30 ký tự");
-    }
-    return Promise.resolve();
-  };
-
-  const validateDateKichThuocUpdate = () => {
-    const tenTim = form1.getFieldValue("ten");
-    if (tenTim === undefined || !tenTim.trim()) {
-      return Promise.reject("Tên không được để trống");
-    }
-    const specialCharacterRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-    if (specialCharacterRegex.test(tenTim)) {
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    }
-    if (tenTim.trim().length > 30) {
-      return Promise.reject("Tên không được vượt quá 30 ký tự");
-    }
-    return Promise.resolve();
   };
 
   const validateDateTim = () => {
@@ -348,85 +269,30 @@ export default function ChatLieu() {
           <hr />
           <div className="ms-3">
             {/* Modal Add */}
-            <Modal
-              title="Thêm Chất Liệu"
-              centered
+            <AddChatLieuModal
               open={open}
-              onCancel={() => setOpen(false)}
-              onOk={() => form.submit()}
-              okText="Thêm"
-              cancelText="Hủy"
-              width={500}
-            >
-              <Form
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={addChatLieu}
-                form={form}
-              >
-                <Form.Item
-                  label="Tên"
-                  name="ten"
-                  hasFeedback
-                  rules={[{ required: true, validator: validateDateAdd }]}
-                >
-                  <Input maxLength={31} className="border" />
-                </Form.Item>
-              </Form>
-            </Modal>
-
+              onClose={() => setOpen(false)}
+              form={form}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              cl={chatLieu}
+              loadCL={loadChatLieu}
+            />
             {/* Modal Update */}
-            <Modal
-              title="Sửa Chất Liệu"
-              centered
-              open={openUpdate}
-              onCancel={() => setOpenUpdate(false)}
-              onOk={() => form1.submit()}
-              okText="Sửa"
-              cancelText="Hủy"
-              width={500}
-            >
-              <Form
-                {...formItemLayout}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={updateChatLieu}
-                form={form1}
-              >
-                <Form.Item
-                  name="ten"
-                  label={<b>Tên</b>}
-                  hasFeedback
-                  rules={[
-                    { required: true, validator: validateDateKichThuocUpdate },
-                  ]}
-                >
-                  <Input
-                    className="border"
-                    maxLength={31}
-                    value={clUpdate?.ten}
-                    onChange={(e) =>
-                      setClUpdate({ ...clUpdate, ten: e.target.value })
-                    }
-                  />
-                </Form.Item>
-                <Form.Item name="trangThai" label={<b>Trạng thái</b>}>
-                  <Radio.Group
-                    onChange={(e) =>
-                      setClUpdate({ ...clUpdate, trangThai: e.target.value })
-                    }
-                    value={clUpdate?.trangThai}
-                  >
-                    <Radio value={0}>Còn bán</Radio>
-                    <Radio value={1}>Dừng bán</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </Form>
-            </Modal>
+            <UpdateChatLieu
+              openUpdate={openUpdate}
+              setOpenUpdate={setOpenUpdate}
+              form1={form1}
+              clUpdate={clUpdate}
+              setClUpdate={setClUpdate}
+              tenCheck={tenCheck}
+              chatLieu={chatLieu}
+              loadChatLieu={loadChatLieu}
+              norm={norm}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              formItemLayout={formItemLayout}
+            />
           </div>
 
           <div className="container-fluid mt-4">

@@ -71,7 +71,9 @@ public class SanPhamService {
     public List<String> getListKichThuocBySanPhamID(String id) {
         return sanPhamRepository.getListKichThuocBySanPhamId(id);
     }
-
+    public List<String>  getSPByCTSP(String id){
+        return sanPhamRepository.getIDSPbyCTSP(id);
+    }
     public SanPhamDetailResponse getProductDetailByCtsp(String ctspId) {
         // 0) Lấy CTSP đại diện
         ChiTietSanPham ctsp0 = chiTietSanPhamRepository.findById(ctspId)

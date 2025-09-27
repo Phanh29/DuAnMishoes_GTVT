@@ -27,24 +27,27 @@ public class HomeService {
 
     public List<HomeRespone> getSearchListSanPham(TimSanPhamTheoMang sp) {
 
-        if (sp.getArraySanPham().length > 0 && sp.getArrayMauSac().length <= 0 && sp.getArrayKichThuoc().length <= 0) {
+        if (sp.getArrayHang().length > 0 && sp.getArrayMauSac().length <= 0 && sp.getArrayKichThuoc().length <= 0) {
             return homeRepository.getLocSanPham(sp);
         }
-        if (sp.getArraySanPham().length > 0 && sp.getArrayMauSac().length > 0 && sp.getArrayKichThuoc().length <= 0) {
+        if (sp.getArrayHang().length > 0 && sp.getArrayMauSac().length > 0 && sp.getArrayKichThuoc().length <= 0) {
             return homeRepository.getLocSanPhamMauSac(sp);
         }
-        if (sp.getArraySanPham().length > 0 && sp.getArrayMauSac().length <= 0 && sp.getArrayKichThuoc().length > 0) {
+        if (sp.getArrayHang().length > 0 && sp.getArrayMauSac().length <= 0 && sp.getArrayKichThuoc().length > 0) {
             System.out.println(sp);
             return homeRepository.getLocSanPhamKichThuoc(sp);
         }
-        if (sp.getArraySanPham().length <= 0 && sp.getArrayMauSac().length > 0 && sp.getArrayKichThuoc().length <= 0) {
+        if (sp.getArrayHang().length <= 0 && sp.getArrayMauSac().length > 0 && sp.getArrayKichThuoc().length <= 0) {
             return homeRepository.getLocMauSac(sp);
         }
-        if (sp.getArraySanPham().length <= 0 && sp.getArrayMauSac().length > 0 && sp.getArrayKichThuoc().length > 0) {
+        if (sp.getArrayHang().length <= 0 && sp.getArrayMauSac().length > 0 && sp.getArrayKichThuoc().length > 0) {
             return homeRepository.getLocMauSacKichthuoc(sp);
         }
-        if (sp.getArraySanPham().length <= 0 && sp.getArrayMauSac().length <= 0 && sp.getArrayKichThuoc().length > 0) {
+        if (sp.getArrayHang().length <= 0 && sp.getArrayMauSac().length <= 0 && sp.getArrayKichThuoc().length > 0) {
             return homeRepository.getLocKichThuoc(sp);
+        }
+        if(sp.getArrayHang().length>0 && sp.getArrayMauSac().length>0 && sp.getArrayKichThuoc().length>0){
+            return homeRepository.getLocSanPhamAll(sp);
         }
         return homeRepository.getLocSanPhamNoData(sp);
     }

@@ -19,6 +19,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { BsFillEyeFill } from "react-icons/bs";
 import { GoNumber } from "react-icons/go";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddKichThuocModal from "./Modal/AddKichThuoc";
+import UpdateKichThuoc from "./Modal/UpdateKichThuoc";
 
 export default function KichThuoc() {
   // Helpers: bỏ dấu & chuẩn hoá tìm kiếm
@@ -59,21 +61,6 @@ export default function KichThuoc() {
     ThuocTinhAPI.getAll("kich-thuoc").then((res) => setKichThuocs(res.data));
   };
 
-  // Add
-  const addKichThuoc = (value) => {
-    const exists = kichThuoc.some((kt) => norm(kt.ten) === norm(value.ten));
-    if (!exists) {
-      ThuocTinhAPI.create("kich-thuoc", value).then(() => {
-        toast.success("✔️ Thêm thành công!");
-        loadKichThuoc();
-        setOpen(false);
-        form.resetFields(); // ✅ reset đúng form thêm
-      });
-    } else {
-      toast.error("Kích thước đã tồn tại!");
-    }
-  };
-
   // Detail -> open Update modal
   const showModal = async (id) => {
     await ThuocTinhAPI.detail("kich-thuoc", id).then((res) => {
@@ -92,49 +79,7 @@ export default function KichThuoc() {
     });
     setOpenUpdate(true);
   };
-
-  // Update
-  const updateKichThuoc = () => {
-    if (ktUpdate.ten !== tenCheck) {
-      const exists = kichThuoc.some((x) => norm(x.ten) === norm(ktUpdate.ten));
-      if (exists) {
-        toast.error("Kích thước trùng với kích thước khác!");
-        return;
-      }
-    }
-    ThuocTinhAPI.update("kich-thuoc", ktUpdate.id, ktUpdate).then(() => {
-      toast.success("✔️ Sửa thành công!");
-      setKtUpdate("");
-      loadKichThuoc();
-      setOpenUpdate(false);
-    });
-  };
-
-  // Validate
-  const validateDateKichThuoc = (_, value) => {
-    const tenTim = form.getFieldValue("ten");
-    if (tenTim === undefined || !tenTim.trim())
-      return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(tenTim))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    const n = parseInt(value, 10);
-    if (isNaN(n) || n < 34 || n > 47)
-      return Promise.reject("Kích thước phải là số nguyên từ 34 đến 47");
-    return Promise.resolve();
-  };
-
-  const validateDateKichThuocUpdate = (_, value) => {
-    const tenTim = form1.getFieldValue("ten");
-    if (tenTim === undefined || !tenTim.trim())
-      return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(tenTim))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    const n = parseInt(value, 10);
-    if (isNaN(n) || n < 34 || n > 47)
-      return Promise.reject("Kích thước phải là số nguyên từ 34 đến 47");
-    return Promise.resolve();
-  };
-
+  
   const validateDateTim = () => {
     const ten = (formTim.getFieldValue("ten") || "").trim();
     if (ten.length > 30)
@@ -319,97 +264,31 @@ export default function KichThuoc() {
           <hr />
           <div className="ms-3">
             {/* Modal Thêm  */}
-            <Modal
-              title="Thêm Kích Thước"
-              centered
+            <AddKichThuocModal
               open={open}
-              onCancel={() => setOpen(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                form={form}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={addKichThuoc}
-              >
-                <Form.Item
-                  label="Tên"
-                  name="ten"
-                  hasFeedback
-                  rules={[{ required: true, validator: validateDateKichThuoc }]}
-                >
-                  <Input maxLength={10} className="border" />
-                </Form.Item>
-                <div className="text-end">
-                  <Button onClick={() => setOpen(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Thêm
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+              onClose={() => setOpen(false)}
+              form={form}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              ktData={kichThuoc}
+              loadKT={loadKichThuoc}
+            />
 
             {/* Modal Sửa */}
-            <Modal
-              title="Sửa kích thước"
-              centered
-              open={openUpdate}
-              onCancel={() => setOpenUpdate(false)}
-              footer={null}
-              width={500}
-            >
-              <Form
-                {...formItemLayout}
-                form={form1}
-                initialValues={{ size: componentSize }}
-                onValuesChange={onFormLayoutChange}
-                size={componentSize}
-                style={{ maxWidth: 1000 }}
-                onFinish={updateKichThuoc}
-              >
-                <Form.Item
-                  name="ten"
-                  label={<b>Tên</b>}
-                  hasFeedback
-                  rules={[
-                    { required: true, validator: validateDateKichThuocUpdate },
-                  ]}
-                >
-                  <Input
-                    className="border"
-                    maxLength={31}
-                    value={ktUpdate?.ten}
-                    onChange={(e) =>
-                      setKtUpdate({ ...ktUpdate, ten: e.target.value })
-                    }
-                  />
-                </Form.Item>
-                <Form.Item name="trangThai" label={<b>Trạng thái</b>}>
-                  <Radio.Group
-                    value={ktUpdate?.trangThai}
-                    onChange={(e) =>
-                      setKtUpdate({ ...ktUpdate, trangThai: e.target.value })
-                    }
-                  >
-                    <Radio value={0}>Còn bán</Radio>
-                    <Radio value={1}>Dừng bán</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                <div className="text-end">
-                  <Button onClick={() => setOpenUpdate(false)} className="me-2">
-                    Hủy
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Sửa
-                  </Button>
-                </div>
-              </Form>
-            </Modal>
+            <UpdateKichThuoc
+              openUpdate={openUpdate}
+              setOpenUpdate={setOpenUpdate}
+              form1={form1}
+              ktUpdate={ktUpdate}
+              setKtUpdate={setKtUpdate}
+              tenCheck={tenCheck}
+              kichThuoc={kichThuoc}
+              loadKichThuoc={loadKichThuoc}
+              norm={norm}
+              componentSize={componentSize}
+              onFormLayoutChange={onFormLayoutChange}
+              formItemLayout={formItemLayout}
+            />
           </div>
 
           <div className="container-fluid mt-4">
@@ -430,7 +309,7 @@ export default function KichThuoc() {
         </div>
       </div>
 
-  
+
       <ToastContainer
         position="top-right"
         autoClose={5000}

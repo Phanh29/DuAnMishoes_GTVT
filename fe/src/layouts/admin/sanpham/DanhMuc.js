@@ -21,6 +21,8 @@ import { BiSolidCategory } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 import { BsFillEyeFill } from "react-icons/bs";
 import { ThuocTinhAPI } from "../../../pages/api/sanpham/ThuocTinhAPI";
+import AddDanhMucModal from "./Modal/AddDanhMucModal";
+import UpdateDanhMuc from "./Modal/UpdateDanhMucModal";
 
 export default function DanhMuc() {
   const removeVietnameseTones = (str = "") =>
@@ -34,6 +36,7 @@ export default function DanhMuc() {
 
   const [formTim] = Form.useForm();
   const [componentSize, setComponentSize] = useState("default");
+  const onFormLayoutChange = ({ size }) => setComponentSize(size);
   const [open, setOpen] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [form] = Form.useForm();
@@ -53,29 +56,6 @@ export default function DanhMuc() {
     ThuocTinhAPI.getAll("danh-muc").then((res) => setDanhMucs(res.data));
   };
 
-  const addDanhMuc = (value) => {
-    const checkTrung = (code) =>
-      danhMuc.some((dm) => norm(dm.ten) === norm(code));
-    if (!checkTrung(value.ten)) {
-      ThuocTinhAPI.create("danh-muc", value).then(() => {
-        toast("✔️ Thêm thành công!", {
-          position: "top-right",
-          autoClose: 5000,
-          theme: "light",
-        });
-        loadDanhMuc();
-        setOpen(false);
-        form.resetFields();
-      });
-    } else {
-      toast.error("Danh mục đã tồn tại!", {
-        position: "top-right",
-        autoClose: 5000,
-        theme: "light",
-      });
-    }
-  };
-
   const showModal = async (id) => {
     await ThuocTinhAPI.detail("danh-muc", id).then((res) => {
       form1.setFieldsValue({
@@ -89,55 +69,7 @@ export default function DanhMuc() {
     });
     setOpenUpdate(true);
   };
-
-  const updateDanhMuc = () => {
-    if (dmUpdate.ten !== tenCheck) {
-      const checkTrung = (ten) =>
-        danhMuc.some((dm) => norm(dm.ten) === norm(ten));
-      if (checkTrung(dmUpdate.ten)) {
-        toast.error("Danh mục trùng với danh mục khác !", {
-          position: "top-right",
-          autoClose: 5000,
-          theme: "light",
-        });
-        return;
-      }
-    }
-    ThuocTinhAPI.update("danh-muc", dmUpdate.id, dmUpdate).then(() => {
-      toast("✔️ Sửa thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        theme: "light",
-      });
-      setDmUpdate("");
-      loadDanhMuc();
-      setOpenUpdate(false);
-    });
-  };
-
-  // validate
-  const validateDateAdd = () => {
-    const tenTim = form.getFieldValue("ten");
-    if (!tenTim || !tenTim.trim())
-      return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]/.test(tenTim))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    if (tenTim.trim().length > 30)
-      return Promise.reject("Tên không được vượt quá 30 ký tự");
-    return Promise.resolve();
-  };
-
-  const validateDateUpdate = () => {
-    const tenTim = form1.getFieldValue("ten");
-    if (!tenTim || !tenTim.trim())
-      return Promise.reject("Tên không được để trống");
-    if (/[!@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]/.test(tenTim))
-      return Promise.reject("Tên không được chứa ký tự đặc biệt");
-    if (tenTim.trim().length > 30)
-      return Promise.reject("Tên không được vượt quá 30 ký tự");
-    return Promise.resolve();
-  };
-
+  
   const validateDateTim = () => {
     const ten = (formTim.getFieldValue("ten") || "").trim();
     if (ten.length > 30)
@@ -307,80 +239,29 @@ export default function DanhMuc() {
         <hr />
 
         {/* Modal Add */}
-        <Modal
-          title="Thêm Danh Mục"
-          centered
+        <AddDanhMucModal
           open={open}
-          onCancel={() => setOpen(false)}
-          footer={null}
-          width={500}
-        >
-          <Form form={form} onFinish={addDanhMuc}>
-            <Form.Item
-              label="Tên"
-              name="ten"
-              hasFeedback
-              rules={[{ required: true, validator: validateDateAdd }]}
-            >
-              <Input maxLength={31} className="border" />
-            </Form.Item>
-            <div className="text-end">
-              <Button onClick={() => setOpen(false)} className="me-2">
-                Hủy
-              </Button>
-              <Button type="primary" htmlType="submit">
-                Thêm
-              </Button>
-            </div>
-          </Form>
-        </Modal>
+          onClose={() => setOpen(false)}
+          form={form}
+          componentSize={componentSize}
+          onFormLayoutChange={onFormLayoutChange}
+          dm={danhMuc}
+          loadDM={loadDanhMuc}
+        />
 
         {/* Modal Update */}
-        <Modal
-          title="Sửa Danh Mục"
-          centered
-          open={openUpdate}
-          onCancel={() => setOpenUpdate(false)}
-          footer={null}
-          width={500}
-        >
-          <Form form={form1} {...formItemLayout} onFinish={updateDanhMuc}>
-            <Form.Item
-              name="ten"
-              label={<b>Tên</b>}
-              hasFeedback
-              rules={[{ required: true, validator: validateDateUpdate }]}
-            >
-              <Input
-                maxLength={31}
-                className="border"
-                value={dmUpdate.ten}
-                onChange={(e) =>
-                  setDmUpdate({ ...dmUpdate, ten: e.target.value })
-                }
-              />
-            </Form.Item>
-            <Form.Item label={<b>Trạng thái</b>}>
-              <Radio.Group
-                value={dmUpdate.trangThai}
-                onChange={(e) =>
-                  setDmUpdate({ ...dmUpdate, trangThai: e.target.value })
-                }
-              >
-                <Radio value={0}>Còn bán</Radio>
-                <Radio value={1}>Dừng bán</Radio>
-              </Radio.Group>
-            </Form.Item>
-            <div className="text-end">
-              <Button onClick={() => setOpenUpdate(false)} className="me-2">
-                Hủy
-              </Button>
-              <Button type="primary" htmlType="submit">
-                Sửa
-              </Button>
-            </div>
-          </Form>
-        </Modal>
+        <UpdateDanhMuc
+          openUpdate={openUpdate}
+          setOpenUpdate={setOpenUpdate}
+          form1={form1}
+          dmUpdate={dmUpdate}
+          setDmUpdate={setDmUpdate}
+          tenCheck={tenCheck}
+          danhMuc={danhMuc}
+          loadDanhMuc={loadDanhMuc}
+          norm={norm}
+          formItemLayout={formItemLayout}
+        />
 
         <Table
           dataSource={filteredDanhMuc}
