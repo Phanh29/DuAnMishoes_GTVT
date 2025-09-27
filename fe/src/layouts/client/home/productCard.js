@@ -34,7 +34,7 @@ export const ProductCard = ({ product }) => {
   };
 
   useEffect(() => {
-    // console.log(product);
+    console.log(product);
     if (storedData!=null) {
       setKhachHang(storedData.userID);
     }
@@ -389,6 +389,8 @@ export const ProductCard = ({ product }) => {
               setOpenModalDetailSP={setOpenModalDetailSP}
               idCt={idCt}
               setidCTSP={setidCTSP}
+              idMS={product.idMS}
+              idKT={product.idKT}
             />
           )}
         </div>

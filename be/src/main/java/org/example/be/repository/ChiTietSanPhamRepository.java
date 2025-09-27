@@ -99,10 +99,12 @@ public interface ChiTietSanPhamRepository extends JpaRepository<ChiTietSanPham, 
 
     // Tất cả CTSP của 1 SP (để build variants)
     @Query("""
-           SELECT ctsp FROM ChiTietSanPham ctsp
-           WHERE ctsp.sanPham.id = :idSanPham
-           """)
+    SELECT DISTINCT ctsp 
+    FROM ChiTietSanPham ctsp
+       WHERE ctsp.sanPham.id = :idSanPham
+    """)
     List<ChiTietSanPham> findBySanPhamId(@Param("idSanPham") String idSanPham);
+
 
     // Lấy tất cả id CTSP theo (sp, màu) – dùng để lấy ảnh theo ctsp_id
     @Query("""
