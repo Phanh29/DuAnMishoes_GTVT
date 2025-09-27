@@ -48,6 +48,7 @@ import { TimKiem } from "../layouts/client/home/TimKiem";
 import { SanPhamClient } from "../layouts/client/sanpham/SanPhamClient";
 import { ChinhSach } from "../layouts/client/chinhsach/ChinhSach";
 import TraCuuDonHangClient from "../layouts/client/tracuudonhang/TraCuuDonHangClient";
+import {GioHang} from "../layouts/client/cart/gioHang";
 import UpdateDotGiamGia from "../layouts/admin/dotgiamgia/UpdateDotGiamGia";
 
 function App() {
@@ -128,7 +129,7 @@ function App() {
 
           {/* client */}
 
-          {/* <Route
+          <Route
             path="/gio-hang"
             element={
               <GuestGuard>
@@ -138,7 +139,7 @@ function App() {
               </GuestGuard>
             }
           />
-       */}
+      
           <Route
             path="/tra-cuu-don-hang"
             element={
