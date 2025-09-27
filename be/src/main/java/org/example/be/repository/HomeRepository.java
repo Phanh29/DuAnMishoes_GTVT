@@ -113,7 +113,7 @@ public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
             	where
              	ctsp.so_luong > 0 AND
              	( ctsp.mau_sac_id IN :#{#req.arrayMauSac} ) AND
-             	( ctsp.hang_id IN :#{#req.arraySanPham} ) AND 
+             	( ctsp.hang_id IN :#{#req.arrayHang} ) AND 
              	( ctsp.kich_thuoc_id IN :#{#req.arrayKichThuoc} ) AND
              	( ctsp.gia_ban BETWEEN :#{#req.giaBatDau} AND :#{#req.giaKetThuc} )
             group by
@@ -153,7 +153,7 @@ public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
             	ctsp.khuyen_mai_id = km.id
             	where
              	ctsp.so_luong > 0 AND
-             	( ctsp.hang_id IN :#{#req.arraySanPham} ) AND
+             	( ctsp.hang_id IN :#{#req.arrayHang} ) AND
              	( ctsp.gia_ban BETWEEN :#{#req.giaBatDau} AND :#{#req.giaKetThuc} )
             group by
             	ctsp.gia_ban,
@@ -193,7 +193,7 @@ public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
             	where
              	ctsp.so_luong > 0 AND
              	( ctsp.mau_sac_id IN :#{#req.arrayMauSac} ) AND
-             	( ctsp.hang_id IN :#{#req.arraySanPham} ) AND
+             	( ctsp.hang_id IN :#{#req.arrayHang} ) AND
              	( ctsp.gia_ban BETWEEN :#{#req.giaBatDau} AND :#{#req.giaKetThuc} )
             group by
             	ctsp.gia_ban,
@@ -232,7 +232,7 @@ public interface HomeRepository extends JpaRepository<ChiTietSanPham, String> {
             	ctsp.khuyen_mai_id = km.id
             	where
              	ctsp.so_luong > 0 AND
-             	( ctsp.hang_id IN :#{#req.arraySanPham} ) AND 
+             	( ctsp.hang_id IN :#{#req.arrayHang} ) AND 
              	( ctsp.kich_thuoc_id IN :#{#req.arrayKichThuoc} ) AND
              	( ctsp.gia_ban BETWEEN :#{#req.giaBatDau} AND :#{#req.giaKetThuc} )                
             group by
