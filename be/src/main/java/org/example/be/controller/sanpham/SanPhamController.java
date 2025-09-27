@@ -50,5 +50,9 @@ public class SanPhamController {
     public ResponseEntity<?> getListKichThuocBySanPhamId(@PathVariable("id") String id) {
         return ResponseEntity.ok(sanPhamService.getListKichThuocBySanPhamID(id));
     }
+    @GetMapping("/showSP/{idCTSP}")
+    public ResponseEntity<?> getSPByCTSP(@PathVariable("idCTSP") String id){
+        return ResponseEntity.ok(sanPhamService.getSPByCTSP(id));
+    }
 }
 

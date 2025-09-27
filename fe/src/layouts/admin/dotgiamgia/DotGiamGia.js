@@ -54,7 +54,7 @@ const DotGiamGia = () => {
   // dataSearch stores current filters from Form
   const [dataSearch, setDataSearch] = useState({});
 
-  // load all promotions once
+  // load all promotions once (and whenever event triggers)
   const loadKhuyenMai = async () => {
     try {
       const resp = await DotGiamGiaAPI.getAll();
@@ -70,9 +70,18 @@ const DotGiamGia = () => {
     loadKhuyenMai();
   }, []);
 
+  // listen global event để reload khi update/add xong từ trang sửa/thêm
+  useEffect(() => {
+    const handler = (e) => {
+      // bạn có thể dùng e.detail nếu muốn truyền thông tin cụ thể
+      loadKhuyenMai();
+    };
+    window.addEventListener("khuyenmai:changed", handler);
+    return () => window.removeEventListener("khuyenmai:changed", handler);
+  }, []);
+
   // helper: apply client-side filter to khuyenMaiAll
   const applyFilters = (all, filters) => {
-    // normalize filter values
     const fMa = filters.ma ? String(filters.ma).trim().toLowerCase() : "";
     const fTen = filters.ten ? String(filters.ten).trim().toLowerCase() : "";
     const fLoai = filters.loai ? String(filters.loai).trim() : "";
@@ -81,14 +90,12 @@ const DotGiamGia = () => {
       filters.gia_tri_khuyen_mai !== null
         ? Number(filters.gia_tri_khuyen_mai)
         : null;
-    // DatePickers return moment objects from antd.
     const fNgayBD = filters.ngay_bat_dau ? moment(filters.ngay_bat_dau) : null;
     const fNgayKT = filters.ngay_ket_thuc
       ? moment(filters.ngay_ket_thuc)
       : null;
 
     return all.filter((item) => {
-      // mã (contains)
       if (
         fMa &&
         !String(item.ma || "")
@@ -96,7 +103,6 @@ const DotGiamGia = () => {
           .includes(fMa)
       )
         return false;
-      // tên (contains)
       if (
         fTen &&
         !String(item.ten || "")
@@ -104,37 +110,29 @@ const DotGiamGia = () => {
           .includes(fTen)
       )
         return false;
-      // loại (exact)
       if (fLoai && fLoai !== "" && String(item.loai || "") !== fLoai)
         return false;
-      // giá trị giảm (match numeric)
       if (fGia !== null && Number(item.gia_tri_khuyen_mai) !== fGia)
         return false;
-      // ngày bắt đầu (record.ngay_bat_dau >= filter.ngay_bat_dau)
       if (fNgayBD) {
         const recBD = item.ngay_bat_dau ? moment(item.ngay_bat_dau) : null;
         if (!recBD || recBD.isBefore(fNgayBD, "second")) return false;
       }
-      // ngày kết thúc (record.ngay_ket_thuc <= filter.ngay_ket_thuc)
       if (fNgayKT) {
         const recKT = item.ngay_ket_thuc ? moment(item.ngay_ket_thuc) : null;
         if (!recKT || recKT.isAfter(fNgayKT, "second")) return false;
       }
-
       return true;
     });
   };
 
   // called when form values change (client-side)
   const onChangeFilter = (changedValues, allValues) => {
-    // normalize string inputs
     if (allValues.hasOwnProperty("ma") && allValues.ma) {
       allValues.ma = String(allValues.ma).trim();
     }
     setDataSearch(allValues);
-    // keep selectedValue in sync with loai select to control InputNumber rendering
     setSelectedValue(allValues.loai || "");
-    // apply filter locally
     const filtered = applyFilters(khuyenMaiAll, allValues);
     setKhuyenMai(filtered);
   };
@@ -143,19 +141,22 @@ const DotGiamGia = () => {
   const updateTrangThai = async (id, value) => {
     try {
       const response = await DotGiamGiaAPI.updateClosePromotion(id, value);
-      // dispatch redux updates (kept behavior)
       dispatch(
         UpdateKMNULLInvoice({ tenKM: response.ten, loaiKM: response.loai })
       );
       if (response.status === 200 || response.status === "200") {
-        await loadKhuyenMai();
+        // thông báo và reload list
         toast.success("Cập nhật thành công!");
+        loadKhuyenMai();
+        // notify other components if needed
+        window.dispatchEvent(
+          new CustomEvent("khuyenmai:changed", { detail: { id } })
+        );
       }
     } catch (err) {
       console.error("Update close promotion error:", err);
       toast.error("Cập nhật thất bại");
     }
-    // cập nhật thanh tien theo ctspHD
     updateInvoiceTotalsFromCtspHD();
   };
 
@@ -170,8 +171,11 @@ const DotGiamGia = () => {
         })
       );
       if (response.status === 200 || response.status === "200") {
-        await loadKhuyenMai();
         toast.success("Cập nhật thành công!");
+        loadKhuyenMai();
+        window.dispatchEvent(
+          new CustomEvent("khuyenmai:changed", { detail: { id } })
+        );
       }
     } catch (err) {
       console.error("Update open promotion error:", err);
@@ -192,7 +196,7 @@ const DotGiamGia = () => {
     });
   };
 
-  // Table columns (kept mostly same, but some minor fixes)
+  // Table columns
   const columns = [
     {
       title: "#",
@@ -265,8 +269,10 @@ const DotGiamGia = () => {
       key: "action",
       render: (record) => (
         <Space size="middle">
+          {/* truyền record qua state để trang sửa dùng luôn */}
           <Link
-            to={`/admin-sua-khuyen-mai/${record.id}`}
+            to={`/admin-sua-dot-giam-gia/${record.id}`}
+            state={{ record }}
             className="btn btn-danger"
           >
             <BsFillEyeFill size={20} />
@@ -387,7 +393,6 @@ const DotGiamGia = () => {
                   onChange={(e) => {
                     const v = e.target.value;
                     setSelectedValue(v);
-                    // update the form field so form.onValuesChange triggers
                     form.setFieldsValue({ loai: v });
                   }}
                   className="rounded-pill border-warning"
@@ -480,7 +485,7 @@ const DotGiamGia = () => {
           <br />
           <button onClick={themKM} className="button-them">
             <span className="text">
-              <PlusCircleOutlined /> Thêm đợt giảm giá 
+              <PlusCircleOutlined /> Thêm đợt giảm giá
             </span>
           </button>
         </div>

@@ -48,6 +48,7 @@ import { TimKiem } from "../layouts/client/home/TimKiem";
 import { SanPhamClient } from "../layouts/client/sanpham/SanPhamClient";
 import { ChinhSach } from "../layouts/client/chinhsach/ChinhSach";
 import TraCuuDonHangClient from "../layouts/client/tracuudonhang/TraCuuDonHangClient";
+import UpdateDotGiamGia from "../layouts/admin/dotgiamgia/UpdateDotGiamGia";
 
 function App() {
   return (
@@ -375,62 +376,22 @@ function App() {
               </AdminGuard>
             }
           />
+          <Route
+            path="/admin-sua-dot-giam-gia/:id"
+            element={
+              <AdminGuard>
+                <DashboardAdmin>
+                  <UpdateDotGiamGia />
+                </DashboardAdmin>
+              </AdminGuard>
+            }
+          />
           {/* <Route
             path="/admin-doi-mat-khau"
             element={
               <AdminGuard>
                 <DashboardAdmin>
                   <DoiMatKhau />
-                </DashboardAdmin>
-              </AdminGuard>
-            }
-          />
-    
-  
-  
-
-   
-   
-   
-          <Route
-            path="/admin-gioi-tinh"
-            element={
-              <AdminGuard>
-                <DashboardAdmin>
-                  <GioiTinh />
-                </DashboardAdmin>
-              </AdminGuard>
-            }
-          />
-     
-   
-     
-          <Route
-            path="/admin-chi-tiet-san-pham/:id"
-            element={
-              <AdminGuard>
-                <DashboardAdmin>
-                  <ChiTietSanPham />
-                </DashboardAdmin>
-              </AdminGuard>
-            }
-          />
-          <Route
-            path="/admin-them-chi-tiet-san-pham/:id"
-            element={
-              <AdminGuard>
-                <DashboardAdmin>
-                  <AddChiTietSanPham />
-                </DashboardAdmin>
-              </AdminGuard>
-            }
-          />
-          <Route
-            path="/admin-update-chi-tiet-san-pham/:id"
-            element={
-              <AdminGuard>
-                <DashboardAdmin>
-                  <UpdateChiTietSanPham />
                 </DashboardAdmin>
               </AdminGuard>
             }
