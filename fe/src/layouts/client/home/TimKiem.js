@@ -3,8 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { HomeAPI } from "../../../pages/api/client/HomeAPI";
 import { FileSearchOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { ProductCard } from "./productCard";
-import ReactPaginate from "react-paginate";
-import { Breadcrumb } from "antd";
+import { Breadcrumb, Pagination } from "antd";
 export const TimKiem = ({ children }) => {
     const { ten } = useParams();
     console.log(ten);
@@ -26,22 +25,15 @@ export const TimKiem = ({ children }) => {
             })
     }
     useEffect(() => {
-        if (ten == undefined) {
+        if (ten === "allsanpham") {
             getAllSanPham()
         } else {
-            console.log(products);
             getAll();
         }
     }, [ten])
     //Phân trang
     const [currentPage, setCurrentPage] = useState(0);
     const productsPerPage = 12;
-    const handlePageChange = ({ selected }) => {
-        setCurrentPage(selected);
-    };
-
-    const pageCount = Math.ceil(products.length / productsPerPage);
-
     const offset = currentPage * productsPerPage;
     const currentPageData = products.slice(offset, offset + productsPerPage);
 
@@ -73,16 +65,12 @@ export const TimKiem = ({ children }) => {
                 </div>
                 <div class="container mt-3 mb-4">
                     <div className="d-flex justify-content-center">
-                        <ReactPaginate
-                            previousLabel={<LeftOutlined />}
-                            nextLabel={<RightOutlined />}
-                            breakLabel={"..."}
-                            pageCount={pageCount}
-                            marginPagesDisplayed={2}
-                            pageRangeDisplayed={3}
-                            onPageChange={handlePageChange}
-                            containerClassName={"pagination"}
-                            activeClassName={"active"}
+                        <Pagination
+                            current={currentPage + 1}
+                            pageSize={productsPerPage}
+                            total={products.length}
+                            onChange={(page) => setCurrentPage(page - 1)}
+                            showSizeChanger={false}
                         />
                     </div>
                 </div>

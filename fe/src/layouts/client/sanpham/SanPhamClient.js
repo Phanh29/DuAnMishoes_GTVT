@@ -18,6 +18,7 @@ import { SortDescendingOutlined } from "@ant-design/icons";
 import logoBanner from "../../../assets/images/page-header-bg.jpg";
 import { Link } from "react-router-dom";
 
+
 export const SanPhamClient = () => {
   const [products, setProducts] = useState([]);
   const [baseProducts, setBaseProducts] = useState([]);
@@ -74,104 +75,135 @@ export const SanPhamClient = () => {
     setCurrentPage(0);
   };
 
-const sortMenuItems = [
-  {
-    key: "1",
-    label: (
-      <button
-        onClick={() => handleSortChange("1")}
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-        }}
-      >
-        Giá tăng dần
-      </button>
-    ),
-  },
-  {
-    key: "2",
-    label: (
-      <button
-        onClick={() => handleSortChange("2")}
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-        }}
-      >
-        Giá giảm dần
-      </button>
-    ),
-  },
-  {
-    key: "3",
-    label: (
-      <button
-        onClick={() => handleSortChange("3")}
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-        }}
-      >
-        Từ A-Z
-      </button>
-    ),
-  },
-  {
-    key: "4",
-    label: (
-      <button
-        onClick={() => handleSortChange("4")}
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-        }}
-      >
-        Từ Z-A
-      </button>
-    ),
-  },
-];
+  const sortMenuItems = [
+    {
+      key: "1",
+      label: (
+        <button
+          onClick={() => handleSortChange("1")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
+          Giá tăng dần
+        </button>
+      ),
+    },
+    {
+      key: "2",
+      label: (
+        <button
+          onClick={() => handleSortChange("2")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
+          Giá giảm dần
+        </button>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <button
+          onClick={() => handleSortChange("3")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
+          Từ A-Z
+        </button>
+      ),
+    },
+    {
+      key: "4",
+      label: (
+        <button
+          onClick={() => handleSortChange("4")}
+          style={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
+          Từ Z-A
+        </button>
+      ),
+    },
+  ];
 
 
   // FILTER
-  const [arraySanPham, setArraySanPham] = useState([]);
+  const [arrayHang, setArrayHang] = useState([]);
   const [arrayMauSac, setArrayMauSac] = useState([]);
   const [arrayKichThuoc, setArrayKichThuoc] = useState([]);
-  const [giaBatDau, setGiaBatDau] = useState(1_000_000);
-  const [giaKetThuc, setGiaKetThuc] = useState(40_000_000);
+  const [giaBatDau, setGiaBatDau] = useState(0);
+  const [giaKetThuc, setGiaKetThuc] = useState(40000000);
 
-  const changeSanPham = (id, checked) =>
-    setArraySanPham((prev) =>
-      checked ? [...prev, id] : prev.filter((x) => x !== id)
-    );
-  const changeMauSac = (id, checked) =>
-    setArrayMauSac((prev) =>
-      checked ? [...prev, id] : prev.filter((x) => x !== id)
-    );
-  const changeKichThuoc = (id, checked) =>
-    setArrayKichThuoc((prev) =>
-      checked ? [...prev, id] : prev.filter((x) => x !== id)
-    );
-  const onChangePrice = (range) => {
-    setGiaBatDau(range[0]);
-    setGiaKetThuc(range[1]);
+  const dataTimKiem = {
+    arrayHang: arrayHang,
+    arrayMauSac: arrayMauSac,
+    arrayKichThuoc: arrayKichThuoc,
+    giaBatDau: giaBatDau,
+    giaKetThuc: giaKetThuc,
   };
+
+  const changeHang = (idHang, checked) => {
+    if (checked) {
+      setArrayHang((prevArray) => [...prevArray, idHang]);
+    } else {
+      setArrayHang((prevArray) => prevArray.filter((item) => item !== idHang));
+    }
+  };
+
+  const changeMauSac = (idMau, checked) => {
+    if (checked) {
+      setArrayMauSac((prevArray) => [...prevArray, idMau]);
+    } else {
+      setArrayMauSac((prevArray) => prevArray.filter((item) => item !== idMau));
+    }
+  };
+
+  const changeKichThuoc = (idKichThuoc, checked) => {
+    if (checked) {
+      setArrayKichThuoc((prevArray) => [...prevArray, idKichThuoc]);
+    } else {
+      setArrayKichThuoc((prevArray) =>
+        prevArray.filter((item) => item !== idKichThuoc)
+      );
+    }
+  };
+
+  const onChange = (value) => {
+    setGiaBatDau(value[0]);
+    setGiaKetThuc(value[1]);
+  };
+
+  const getTimMang = (data) => {
+    console.log(data);
+    HomeAPI.timMang(data).then((res) => {
+      setProducts(res.data);
+      console.log(products);
+    });
+  };
+
 
   useEffect(() => {
     const hasFilter =
-      arraySanPham.length > 0 ||
+      arrayHang.length > 0 ||
       arrayMauSac.length > 0 ||
       arrayKichThuoc.length > 0 ||
-      giaBatDau !== 1_000_000 ||
+      giaBatDau !== 0 ||
       giaKetThuc !== 40_000_000;
 
     if (!hasFilter) {
@@ -182,20 +214,9 @@ const sortMenuItems = [
       return;
     }
 
-    const payload = {
-      arraySanPham,
-      arrayMauSac,
-      arrayKichThuoc,
-      giaBatDau,
-      giaKetThuc,
-    };
-    HomeAPI.timMang(payload).then((res) => {
-      const result = res.data || [];
-      setProducts(sortType ? sortProducts(sortType, result) : result);
-      setCurrentPage(0);
-    });
+    getTimMang(dataTimKiem);
   }, [
-    arraySanPham,
+    arrayHang,
     arrayMauSac,
     arrayKichThuoc,
     giaBatDau,
@@ -281,10 +302,14 @@ const sortMenuItems = [
                   <Slider
                     range
                     step={1_000_000}
-                    defaultValue={[1_000_000, 40_000_000]}
-                    min={1_000_000}
+                    defaultValue={[0, 40_000_000]}
+                    min={0}
                     max={40_000_000}
-                    onChange={onChangePrice}
+                    onChange={onChange}
+                    tooltip={{
+                      formatter: (value) =>
+                        `${value.toLocaleString("vi-VN")} VNĐ`,
+                    }}
                   />
                 ),
               },
@@ -306,7 +331,7 @@ const sortMenuItems = [
                           key={h.id}
                           value={h.id}
                           onChange={(e) =>
-                            changeSanPham(h.id, e.target.checked)
+                            changeHang(h.id, e.target.checked)
                           }
                         >
                           <b>{h.ten}</b>
