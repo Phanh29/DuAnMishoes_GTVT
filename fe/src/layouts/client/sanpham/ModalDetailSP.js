@@ -109,10 +109,6 @@ const tinhTien = (v, q, km) => {
   const t = await GioHangAPI.addGH({ ma: taoMa(), khachHang: null });
   set("GioHang", t?.data);
   return t?.data;
-      "KM="  ,km
-    );
-    // TODO: gọi API add giỏ hàng
-    toast.success("Thêm thành công!", { position: "top-right" });
   };
 
   const upsertGhct = async (gioHangId, ctsp, soLuong, thanhTien) => {
@@ -144,7 +140,7 @@ const handleAddGioHang = async () => {
     const thanhTien = tinhTien(selectedVariant, soLuong, km);
     await upsertGhct(gh.id, selectedVariant, soLuong, thanhTien);
 
-    toast("✔️ Thêm thành công!", { position: "top-right" });
+    toast.success("✔️ Thêm thành công!", { position: "top-right" });
     loadCountGioHang();
   } catch (e) {
     console.error(e);
