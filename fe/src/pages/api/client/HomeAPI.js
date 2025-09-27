@@ -82,7 +82,7 @@ export class HomeAPI {
   static updateDiaChiMacDinhKHClient = (id) => {
     return requestClient({
       method: "POST",
-      url: `home/khach-hang/update-tt-dc/${id}`,
+      url: `home/khach-hang/update-dia-chi-mac-dinh/${id}`,
     });
   };
 

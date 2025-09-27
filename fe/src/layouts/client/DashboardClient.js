@@ -41,7 +41,7 @@ const accountMenu = (nav, dangXuat) => [
 export const DashboardClient = ({ children }) => {
   const nav = useNavigate();
   const [user, setUser] = useState({ name: null, avatar: null });
-  const { totalQuantity } = useCart();
+  const { totalQuantity } = useCart()??0;
   const [valueSearch, setValueSearch] = useState("");
 
   const {

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { HomeAPI } from "../../../pages/api/client/HomeAPI";
 import { GioHangAPI } from "../../../pages/api/client/gioHang/GioHangAPI";
-import { get } from "local-storage";
+import { get,set } from "local-storage";
 import { useCart } from "../cart/CartContext";
 
 const ModalDetailSP = ({
@@ -13,14 +13,12 @@ const ModalDetailSP = ({
   setidCTSP,
 }) => {
   const { updateTotalQuantity } = useCart();
-
   const [productDetail, setProductDetail] = useState(null);
   const [largeImage, setLargeImage] = useState("");
   const [selectedMauSac, setSelectedMauSac] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [soLuong, setSoLuong] = useState(1);
   const [khachHang, setKhachHang] = useState(null);
-
   const storedData = get("userData");
   const storedGioHang = get("GioHang");
 
@@ -29,6 +27,7 @@ const ModalDetailSP = ({
     try {
       const res = await HomeAPI.getProductDetailByCtsp(idCt);
       setProductDetail(res.data);
+      console.log("product",res.data);
 
       if (res.data.colors?.length > 0) {
         setSelectedMauSac(res.data.colors[0].id);
@@ -45,15 +44,16 @@ const ModalDetailSP = ({
   };
 
   const loadCountGioHang = async () => {
-    if (storedData) {
-      const res = await GioHangAPI.getByIDKH(storedData.userID);
-      if (res.data) {
-        const resGH = await GioHangAPI.getAllGHCTByIDGH(res.data.id);
-        updateTotalQuantity(resGH.data.length);
-      }
-    } else if (storedGioHang) {
-      const resGH = await GioHangAPI.getAllGHCTByIDGH(storedGioHang.id);
-      updateTotalQuantity(resGH.data.length);
+    try {
+      const cartId = storedData?.userID
+        ? (await GioHangAPI.getByIDKH(storedData.userID))?.data?.id
+        : storedGioHang?.id;
+      if (!cartId) return updateTotalQuantity(0);
+      const items = (await GioHangAPI.getAllGHCTByIDGH(cartId))?.data ?? [];
+      updateTotalQuantity(items.reduce((sum, it) => sum + (Number(it.soLuong)||0), 0));
+    } catch (e) {
+      console.error("loadCountGioHang:", e);
+      updateTotalQuantity(0);
     }
   };
 
@@ -82,38 +82,82 @@ const ModalDetailSP = ({
     setidCTSP("");
   };
 
-  const handleAddGioHang = () => {
-    if (!selectedVariant) {
-      toast.error("Vui lòng chọn màu & size hợp lệ!");
-      return;
-    }
-    if (soLuong > (selectedVariant.soLuong || 0)) {
-      toast.error("Số lượng sản phẩm không đủ!");
-      return;
-    }
-    console.log(
-      "[ModalDetailSP] Thêm vào giỏ: CTSP ID =",
-      selectedVariant.id,
-      "Số lượng =",
-      soLuong,
+  // ==== Utils gọn ====
+  const taoMa = (n = 6, c = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") =>
+  Array.from({ length: n }, () => c[(Math.random() * c.length) | 0]).join("");
 
-      "KM="  ,km
-    );
-    // TODO: gọi API add giỏ hàng
-    toast("✔️ Thêm thành công!", { position: "top-right" });
+// Ưu tiên khuyến mãi từ tham số km nếu có; fallback dùng dữ liệu của variant
+const tinhTien = (v, q, km) => {
+  const loai = km?.loaiKM ?? v?.loaiKM;
+  const gt = km?.giaTriKhuyenMai ?? v?.giaTriKhuyenMai ?? 0;
+  const gia = Number(v?.giaBan || 0);
+  return !loai
+    ? gia * q
+    : loai === "Tiền mặt"
+    ? (gia - gt) * q
+    : (gia - (gia * gt) / 100) * q;
   };
 
-  if (!productDetail) return null;
+  const getOrCreateCart = async (khachHang, stored) => {
+  if (stored?.id) return stored;
+  if (khachHang) {
+    const r = await GioHangAPI.getByIDKH(khachHang);
+  if (r?.data) return r.data;
+    return (await GioHangAPI.addGH({ ma: taoMa(), khachHang })).data;
+  }
+  const t = await GioHangAPI.addGH({ ma: taoMa(), khachHang: null });
+  set("GioHang", t?.data);
+  return t?.data;
+  };
 
-  /** Giá hiển thị */
-  const basePrice =
-    selectedVariant?.giaBan ?? productDetail.variants?.[0]?.giaBan ?? 0;
-  const km = selectedVariant?.khuyenMai;
-  const finalPrice = km
-    ? km.loai === "Tiền mặt"
-      ? basePrice - (km.giaTri || 0)
-      : basePrice - (basePrice * (km.giaTri || 0)) / 100
-    : basePrice;
+  const upsertGhct = async (gioHangId, ctsp, soLuong, thanhTien) => {
+  const r = await GioHangAPI.getAllGHCTByIDGH(gioHangId);
+  const cur = (r?.data||[]).find(x => x.chiTietSanPham === ctsp.id);
+  console.log("ctsp",ctsp);
+  const body = {
+    gioHang: {"id":cur ? cur.gioHang : gioHangId},
+    chiTietSanPham: {"id":ctsp.id},
+    soLuong,
+    thanhTien,
+    ...(cur && { id: cur.id })
+  };
+  return cur ? GioHangAPI.updateSLGHCT(body) : GioHangAPI.addGHCT(body);
+  };
+
+// ==== Hàm gọi trong ModalDetailSP ====
+const handleAddGioHang = async () => {
+  try {
+    if (!selectedVariant)
+      return toast.error("Vui lòng chọn màu & size hợp lệ!");
+
+    if (Number(soLuong) > Number(selectedVariant?.soLuong || 0))
+      return toast.error("Số lượng sản phẩm không đủ!");
+
+    const gh = await getOrCreateCart(khachHang, storedGioHang);
+    if (!gh?.id) throw new Error("Không xác định giỏ hàng.");
+
+    const thanhTien = tinhTien(selectedVariant, soLuong, km);
+    await upsertGhct(gh.id, selectedVariant, soLuong, thanhTien);
+
+    toast("✔️ Thêm thành công!", { position: "top-right" });
+    loadCountGioHang();
+  } catch (e) {
+    console.error(e);
+    toast.error("Thêm giỏ hàng thất bại. Vui lòng thử lại!");
+  }
+};
+
+if (!productDetail) return null;
+
+/** Giá hiển thị */
+const basePrice =
+  selectedVariant?.giaBan ?? productDetail.variants?.[0]?.giaBan ?? 0;
+const km = selectedVariant?.khuyenMai;
+const finalPrice = km
+  ? km.loai === "Tiền mặt"
+    ? basePrice - (km.giaTri || 0)
+    : basePrice - (basePrice * (km.giaTri || 0)) / 100
+  : basePrice;
 
   return (
     <Modal

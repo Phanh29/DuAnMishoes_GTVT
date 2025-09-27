@@ -1,6 +1,7 @@
 package org.example.be.controller.client;
 
 import lombok.RequiredArgsConstructor;
+import org.example.be.entity.GioHangChiTiet;
 import org.example.be.service.GioHangChiTietService;
 import org.example.be.service.SanPham.ChiTietSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,18 @@ public class GioHangChiTietController {
     public ResponseEntity<?> getAllGHCT(@PathVariable("idGH") String idGH) {
         return ResponseEntity.ok(gioHangChiTietService.getAllGHCT(idGH));
     }
-//    @PostMapping("/addGHCT")
-//    public ResponseEntity<?> addGHCT(@RequestBody GioHangChiTietRequest request){
-//        return ResponseEntity.ok(gioHangChiTietService.addGHCT(request));
-//    }
-//    @PostMapping("/updateSLGHCT")
-//    public ResponseEntity<?> updateSLGHCT(@RequestBody GioHangChiTietRequest request){
-//        return ResponseEntity.ok(gioHangChiTietService.updateSLGHCT(request));
-//    }
-//    @PostMapping("/updateGHCT")
-//    public ResponseEntity<?> updateGHCT(@RequestBody GioHangChiTietRequest request){
-//        return ResponseEntity.ok(gioHangChiTietService.updateGHCT(request));
-//    }
+    @PostMapping("/addGHCT")
+    public ResponseEntity<?> addGHCT(@RequestBody GioHangChiTiet request){
+        return ResponseEntity.ok(gioHangChiTietService.addGHCT(request));
+    }
+    @PostMapping("/updateSLGHCT")
+    public ResponseEntity<?> updateSLGHCT(@RequestBody GioHangChiTiet request){
+        return ResponseEntity.ok(gioHangChiTietService.updateSLGHCT(request));
+    }
+    @PostMapping("/updateGHCT")
+    public ResponseEntity<?> updateGHCT(@RequestBody GioHangChiTiet request){
+        return ResponseEntity.ok(gioHangChiTietService.updateGHCT(request));
+    }
 //    @GetMapping("/detailCTSP/{idCT}") // truyền vào ictsp lấy ra detail
 //    public ResponseEntity<?> getDetail(@PathVariable("idCT") String id) {
 //        return  ResponseEntity.ok(ctspService.detailCTSPGioHang(id));
