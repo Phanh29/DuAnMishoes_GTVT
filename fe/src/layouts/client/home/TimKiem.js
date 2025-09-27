@@ -6,7 +6,6 @@ import { ProductCard } from "./productCard";
 import { Breadcrumb, Pagination } from "antd";
 export const TimKiem = ({ children }) => {
     const { ten } = useParams();
-    console.log(ten);
     //Load product
     const [products, setProducts] = useState([]);
     const [countProducts, setCountProducts] = useState([]);

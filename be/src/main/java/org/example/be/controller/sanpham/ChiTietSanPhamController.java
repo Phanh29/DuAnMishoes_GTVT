@@ -60,10 +60,16 @@ public class ChiTietSanPhamController {
         return ResponseEntity.ok(ctspService.getSearch(id, ctspSearch));
     }
 
+    // thêm khuyến mại vào sản phẩm
     @PutMapping("/updateKM/{idCTSP}")
     public ResponseEntity<?> update(@PathVariable("idCTSP") String idCTSP,
                                     @RequestBody KhuyenMai khuyenMai) {
         ChiTietSanPham updated = ctspService.updateKM(idCTSP, khuyenMai);
         return ResponseEntity.ok(updated);
+    }
+    @GetMapping("/showKM/{idKM}")
+    public ResponseEntity<?> getALLCTSPByKM(@PathVariable("idKM") String id) {
+
+        return ResponseEntity.ok(ctspService.getALLCTSP(id));
     }
 }

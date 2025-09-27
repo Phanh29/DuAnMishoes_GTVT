@@ -169,4 +169,5 @@ public class ChiTietSanPhamService {
 
     private BigDecimal nvl(BigDecimal v) { return v == null ? BigDecimal.ZERO : v; }
     private String nvlStr(String s) { return s == null ? "" : s; }
+
 }

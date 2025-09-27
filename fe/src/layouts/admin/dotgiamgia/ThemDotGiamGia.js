@@ -16,7 +16,7 @@ import { BiSolidDiscount } from "react-icons/bi";
 import { LuBadgePercent } from "react-icons/lu";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
-// ❌ BỎ: import { formatInTimeZone } from "date-fns-tz";
+
 import dayjs from "dayjs";
 import { DotGiamGiaAPI } from "../../../pages/api/dotgiamgia/DotGiamGiaAPI";
 import TableChiTietSanPham from "./tableChiTietSanPham";
@@ -118,12 +118,10 @@ const ThemDotGiamGia = () => {
   const handleSelectedCTSanPham = (keys) => {
     setSelectedIDCTSP(keys);
   };
-
   return (
     <div className="container-fuild">
       <div>
         <Breadcrumb
-          style={{ marginTop: "10px" }}
           items={[
             {
               title: (
@@ -151,12 +149,11 @@ const ThemDotGiamGia = () => {
             { title: "Thêm đợt giảm giá" },
           ]}
         />
-
         <div className="container-fluid">
           <br />
           <div className="row">
             <Divider orientation="center">
-              <h2 className="text-first pt-1 fw-bold">
+              <h2 className="text-first  fw-bold">
                 <LuBadgePercent /> Thêm đợt giảm giá
               </h2>
             </Divider>
@@ -164,7 +161,7 @@ const ThemDotGiamGia = () => {
             {/* Form trái */}
             <div
               className="bg-light col-md-4"
-              style={{ borderRadius: 20, marginBottom: 10, height: 550 }}
+              style={{ borderRadius: 20,  height: 550 }}
             >
               <Divider orientation="left">
                 <h4 className="text-first pt-1 fw-bold">

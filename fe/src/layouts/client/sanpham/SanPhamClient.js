@@ -190,10 +190,8 @@ export const SanPhamClient = () => {
   };
 
   const getTimMang = (data) => {
-    console.log(data);
     HomeAPI.timMang(data).then((res) => {
       setProducts(res.data);
-      console.log(products);
     });
   };
 
@@ -301,10 +299,10 @@ export const SanPhamClient = () => {
                 children: (
                   <Slider
                     range
-                    step={1_000_000}
-                    defaultValue={[0, 40_000_000]}
-                    min={0}
-                    max={40_000_000}
+                    step={100_000} // mỗi nấc 100k
+                    defaultValue={[100_000, 10_000_000]} // bắt đầu từ 100k tới 10tr
+                    min={200_000} // min 100k
+                    max={10_000_000} // max 10tr
                     onChange={onChange}
                     tooltip={{
                       formatter: (value) =>
@@ -330,9 +328,7 @@ export const SanPhamClient = () => {
                         <Checkbox
                           key={h.id}
                           value={h.id}
-                          onChange={(e) =>
-                            changeHang(h.id, e.target.checked)
-                          }
+                          onChange={(e) => changeHang(h.id, e.target.checked)}
                         >
                           <b>{h.ten}</b>
                         </Checkbox>
