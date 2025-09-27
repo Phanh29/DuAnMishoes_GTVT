@@ -3,15 +3,29 @@ package org.example.be.dto.respon;
 import java.math.BigDecimal;
 
 public interface HomeRespone {
-    public String getIdSanPham();
-    public String getIdCt();
-    public String getName();
-    public String getSize();
-    public String getColor();
-    public String getColorCode();
-    public BigDecimal getPrice();
-    public String getImage();
-    public String getHoverImage();
-    public String getLoaiKM();
-    public BigDecimal getGiaTriKhuyenMai();
+    String getIdSanPham();
+
+    String getIdCt();
+
+    String getIdMS();
+
+    String getIdKT();
+
+    String getName();
+
+    String getSize();
+
+    String getColor();
+
+    String getColorCode();
+
+    BigDecimal getPrice();
+
+    String getImage();
+
+    String getHoverImage();
+
+    String getLoaiKM();
+
+    BigDecimal getGiaTriKhuyenMai();
 }

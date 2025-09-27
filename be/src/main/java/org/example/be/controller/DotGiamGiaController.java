@@ -2,7 +2,6 @@ package org.example.be.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.be.dto.request.KhuyenMaiRequest;
-import org.example.be.entity.ChiTietSanPham;
 import org.example.be.entity.KhuyenMai;
 import org.example.be.service.KhuyenMaiService;
 import org.example.be.service.SanPham.ChiTietSanPhamService;

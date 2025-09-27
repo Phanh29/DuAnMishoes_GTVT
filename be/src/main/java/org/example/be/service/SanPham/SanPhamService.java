@@ -2,10 +2,12 @@ package org.example.be.service.SanPham;
 
 import org.example.be.dto.impldto.SanPhamDetailResponse;
 import org.example.be.dto.request.ThuocTinhRequest;
+import org.example.be.dto.respon.CtspKmViewRespone;
 import org.example.be.dto.respon.SanPhamRespone;
 import org.example.be.entity.ChiTietSanPham;
 import org.example.be.entity.SanPham;
 import org.example.be.repository.ChiTietSanPhamRepository;
+import org.example.be.repository.KhuyenMaiSanPhamRepository;
 import org.example.be.repository.ThuocTinhSanPham.HinhAnhRepository;
 import org.example.be.repository.ThuocTinhSanPham.KichThuocRepository;
 import org.example.be.repository.ThuocTinhSanPham.MauSacRespository;
@@ -14,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SanPhamService {
@@ -29,7 +34,8 @@ public class SanPhamService {
     private ChiTietSanPhamRepository chiTietSanPhamRepository;
     @Autowired
     private HinhAnhRepository hinhAnhRepository;
-
+    @Autowired
+    KhuyenMaiSanPhamRepository khuyenMaiSanPhamRepository;
     public List<SanPham> getALL() {
         Sort sortByNgayTao = Sort.by(Sort.Direction.DESC, "ngayTao");
         return sanPhamRepository.findAll(sortByNgayTao);
@@ -75,66 +81,77 @@ public class SanPhamService {
         return sanPhamRepository.getIDSPbyCTSP(id);
     }
     public SanPhamDetailResponse getProductDetailByCtsp(String ctspId) {
-        // 0) Lấy CTSP đại diện
+        // 0) CTSP đại diện
         ChiTietSanPham ctsp0 = chiTietSanPhamRepository.findById(ctspId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy CTSP"));
         String sanPhamId = ctsp0.getSanPham().getId();
 
-        // 1) Màu + ảnh (gom ảnh từ tất cả CTSP thuộc mỗi màu của cùng sản phẩm)
-        List<SanPhamDetailResponse.ColorResponse> colors =
-                mauSacRepository.findBySanPhamId(sanPhamId)
-                        .stream()
-                        .map(ms -> {
-                            // tất cả ctsp.id của sản phẩm này theo màu ms
-                            List<String> ctspIds = chiTietSanPhamRepository
-                                    .findIdsBySanPhamAndMauSac(sanPhamId, ms.getId());
-                            // ảnh ở bảng hinh_anh chỉ có chi_tiet_san_pham_id → lọc distinct để tránh trùng
-                            List<String> images = ctspIds.isEmpty()
-                                    ? List.of()
-                                    : hinhAnhRepository.findUrlsByCtspIds(ctspIds)
-                                    .stream()
-                                    .distinct()
-                                    .toList();
-                            return new SanPhamDetailResponse.ColorResponse(
-                                    ms.getId(),
-                                    ms.getTen(),
-                                    ms.getMa(),
-                                    images
-                            );
-                        })
-                        .toList();
+        // 1) Màu + ảnh (gom ảnh từ tất cả CTSP thuộc mỗi màu)
+        var colors = mauSacRepository.findBySanPhamId(sanPhamId)
+                .stream()
+                .map(ms -> {
+                    List<String> ctspIds = chiTietSanPhamRepository
+                            .findIdsBySanPhamAndMauSac(sanPhamId, ms.getId());
+                    List<String> images = ctspIds.isEmpty()
+                            ? List.of()
+                            : hinhAnhRepository.findUrlsByCtspIds(ctspIds)
+                            .stream().distinct().toList();
+                    return new SanPhamDetailResponse.ColorResponse(
+                            ms.getId(), ms.getTen(), ms.getMa(), images
+                    );
+                })
+                .toList();
 
         // 2) Size (distinct theo sản phẩm)
-        List<SanPhamDetailResponse.SizeResponse> sizes =
-                kichThuocRepository.findBySanPhamId(sanPhamId)
-                        .stream()
-                        .map(kt -> new SanPhamDetailResponse.SizeResponse(kt.getId(), kt.getTen()))
-                        .toList();
+        var sizes = kichThuocRepository.findBySanPhamId(sanPhamId)
+                .stream()
+                .map(kt -> new SanPhamDetailResponse.SizeResponse(kt.getId(), kt.getTen()))
+                .toList();
 
-        // 3) Biến thể (toàn bộ CTSP của sản phẩm)
-        List<SanPhamDetailResponse.VariantResponse> variants =
-                chiTietSanPhamRepository.findBySanPhamId(sanPhamId)
-                        .stream()
-                        .map(v -> new SanPhamDetailResponse.VariantResponse(
-                                v.getId(),
-                                v.getMauSac() != null ? v.getMauSac().getId() : null,
-                                v.getKichThuoc() != null ? v.getKichThuoc().getId() : null,
-                                v.getGiaBan(),
-                                v.getSoLuong(),
-                                v.getKhuyenMai() != null
-                                        ? new SanPhamDetailResponse.KhuyenMaiResponse(
-                                        v.getKhuyenMai().getLoai(),
-                                        v.getKhuyenMai().getGia_tri_khuyen_mai()
-                                )
-                                        : null
-                        ))
-                        .toList();
+        // 3a) Toàn bộ CTSP của SP
+        List<ChiTietSanPham> allCtsp = chiTietSanPhamRepository.findBySanPhamId(sanPhamId);
+        List<String> allCtspIds = allCtsp.stream().map(ChiTietSanPham::getId).toList();
 
-        // 4) Trả DTO – lấy phần mô tả/thuộc tính từ CTSP đại diện (vì SP không có)
+        // 3b) Batch query khuyến mại đang hiệu lực
+        LocalDate today = LocalDate.now(); // nếu dùng LocalDateTime, đổi cả repo & đây
+        List<CtspKmViewRespone> kmRows = allCtspIds.isEmpty()
+                ? List.of()
+                : khuyenMaiSanPhamRepository.findActiveKmByCtspIds(allCtspIds, today);
+
+        // 3c) chọn 1 KM "đại diện" cho mỗi CTSP (nếu nhiều, giữ cái đầu;
+        //     nếu bạn có doUuTien → bạn có thể chọn theo rule ưu tiên)
+        Map<String, CtspKmViewRespone> kmMap = new HashMap<>();
+        for (CtspKmViewRespone r : kmRows) {
+            kmMap.putIfAbsent(r.getCtspId(), r);
+        }
+
+        // 3d) Build variants + gắn KM
+        var variants = allCtsp.stream()
+                .map(v -> {
+                    var km = kmMap.get(v.getId()); // có thể null
+                    SanPhamDetailResponse.KhuyenMaiResponse kmDto = null;
+                    if (km != null) {
+                        kmDto = new SanPhamDetailResponse.KhuyenMaiResponse(
+                                km.getLoai(),
+                                km.getGiaTri()
+                        );
+                    }
+                    return new SanPhamDetailResponse.VariantResponse(
+                            v.getId(),
+                            v.getMauSac()    != null ? v.getMauSac().getId()    : null,
+                            v.getKichThuoc() != null ? v.getKichThuoc().getId() : null,
+                            v.getGiaBan(),
+                            v.getSoLuong(),
+                            kmDto
+                    );
+                })
+                .toList();
+
+        // 4) Trả DTO (meta từ CTSP đại diện)
         return new SanPhamDetailResponse(
-                ctsp0.getSanPham().getId(),                       // idSanPham
-                ctsp0.getSanPham().getTen(),                      // tên (nếu tên ở SP)
-                ctsp0.getMoTa(),                                  // mô tả ở CTSP
+                ctsp0.getSanPham().getId(),
+                ctsp0.getSanPham().getTen(),
+                ctsp0.getMoTa(),
                 ctsp0.getHang()     != null ? ctsp0.getHang().getTen()     : null,
                 ctsp0.getDanhMuc()  != null ? ctsp0.getDanhMuc().getTen()  : null,
                 ctsp0.getChatLieu() != null ? ctsp0.getChatLieu().getTen() : null,
@@ -144,5 +161,4 @@ public class SanPhamService {
                 variants
         );
     }
-
 }

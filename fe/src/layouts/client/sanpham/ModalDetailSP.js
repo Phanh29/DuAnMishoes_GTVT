@@ -11,6 +11,8 @@ const ModalDetailSP = ({
   setOpenModalDetailSP,
   idCt,
   setidCTSP,
+  idMS,
+  idKT
 }) => {
   const { updateTotalQuantity } = useCart();
   const [productDetail, setProductDetail] = useState(null);
@@ -22,26 +24,28 @@ const ModalDetailSP = ({
   const storedData = get("userData");
   const storedGioHang = get("GioHang");
 
-  const loadProductDetail = async () => {
-    if (!idCt) return;
-    try {
-      const res = await HomeAPI.getProductDetailByCtsp(idCt);
-      setProductDetail(res.data);
-      console.log("product",res.data);
-
-      if (res.data.colors?.length > 0) {
-        setSelectedMauSac(res.data.colors[0].id);
-        if (res.data.colors[0].images?.length > 0) {
-          setLargeImage(res.data.colors[0].images[0]);
-        }
+const loadProductDetail = async () => {
+  if (!idCt) return;
+  try {
+    const res = await HomeAPI.getProductDetailByCtsp(idCt);
+    setProductDetail(res.data);
+    // set màu sắc theo idMS
+    if (idMS) {
+      setSelectedMauSac(idMS);
+      const color = res.data.colors?.find((c) => c.id === idMS);
+      if (color?.images?.length > 0) {
+        setLargeImage(color.images[0]);
       }
-      if (res.data.sizes?.length > 0) {
-        setSelectedSize(res.data.sizes[0].id);
-      }
-    } catch (e) {
-      console.error(e);
     }
-  };
+    // set kích thước theo idKT
+    if (idKT) {
+      setSelectedSize(idKT);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 
   const loadCountGioHang = async () => {
     try {
@@ -59,7 +63,7 @@ const ModalDetailSP = ({
 
   useEffect(() => {
     loadProductDetail();
-    loadCountGioHang();
+ 
     if (storedData) setKhachHang(storedData.userID);
   }, [idCt]);
 
@@ -255,31 +259,34 @@ const finalPrice = km
           <hr />
           <h6>Size</h6>
           <div className="row">
-            {productDetail.sizes?.map((s) => {
-              const variant = productDetail.variants?.find(
-                (v) => v.mauSacId === selectedMauSac && v.sizeId === s.id
-              );
-              const hetHang = !variant || variant.soLuong <= 0;
-              return (
-                <div className="col-md-1 me-2" key={s.id}>
-                  <Button
-                    style={{
-                      borderRadius: 10,
-                      width: 40,
-                      height: 40,
-                      border:
-                        selectedSize === s.id
-                          ? "1px solid #4096ff"
-                          : "1px solid #d9d9d9",
-                    }}
-                    disabled={hetHang} // disable nếu hết hàng
-                    onClick={() => setSelectedSize(s.id)}
-                  >
-                    {s.ten}
-                  </Button>
-                </div>
-              );
-            })}
+            {productDetail.sizes
+              ?.slice() // copy mảng để không mutate dữ liệu gốc
+              .sort((a, b) => a.ten.localeCompare(b.ten, "vi")) // sắp xếp theo tên tăng dần
+              .map((s) => {
+                const variant = productDetail.variants?.find(
+                  (v) => v.mauSacId === selectedMauSac && v.sizeId === s.id
+                );
+                const hetHang = !variant || variant.soLuong <= 0;
+                return (
+                  <div className="col-md-1 me-2" key={s.id}>
+                    <Button
+                      style={{
+                        borderRadius: 10,
+                        width: 40,
+                        height: 40,
+                        border:
+                          selectedSize === s.id
+                            ? "1px solid #4096ff"
+                            : "1px solid #d9d9d9",
+                      }}
+                      disabled={hetHang}
+                      onClick={() => setSelectedSize(s.id)}
+                    >
+                      {s.ten}
+                    </Button>
+                  </div>
+                );
+              })}
           </div>
 
           <h6 className="mt-3">Số lượng</h6>
